@@ -1,7 +1,7 @@
 package laskutaitotesti;
 
 import java.io.BufferedReader;
-import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -14,7 +14,15 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import uk.ac.ed.ph.jacomax.JacomaxSimpleConfigurator;
+import uk.ac.ed.ph.jacomax.MaximaConfiguration;
+import uk.ac.ed.ph.jacomax.MaximaInteractiveProcess;
+import uk.ac.ed.ph.jacomax.MaximaProcessLauncher;
+import uk.ac.ed.ph.jacomax.MaximaTimeoutException;
+
 import java.lang.Math;
+
 
 public class Main {
 	
@@ -24,6 +32,17 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+	    
+	    MaximaConfiguration configuration = JacomaxSimpleConfigurator.configure();
+	    MaximaProcessLauncher launcher = new MaximaProcessLauncher(configuration);
+	    MaximaInteractiveProcess process = launcher.launchInteractiveProcess();
+	    try {
+            System.out.println(process.executeCall("1+2;"));
+        } catch (MaximaTimeoutException e2) {
+            // TODO Auto-generated catch block
+            e2.printStackTrace();
+        }
+	    process.terminate();
 	    
 	    try {
 	        ProcessBuilder builder = new ProcessBuilder(
