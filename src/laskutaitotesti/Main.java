@@ -18,28 +18,7 @@ import java.lang.Math;
 
 public class Main {
 	
-	private static final String[] regexteht = new String[] {
-			"\\;\\;T1\\;\\;"
-			,"\\;\\;T2\\;\\;"
-			,"\\;\\;T3\\;\\;"
-			,"\\;\\;T4\\;\\;"
-			,"\\;\\;T5\\;\\;"
-			,"\\;\\;T6\\;\\;"
-			,"\\;\\;T7\\;\\;"
-			,"\\;\\;T8\\;\\;"
-			,"\\;\\;T9\\;\\;"
-			,"\\;\\;T10\\;\\;"};
-    private static final String[] regexvast = new String[] {
-            "\\;\\;T1ans\\;\\;"
-            ,"\\;\\;T2ans\\;\\;"
-            ,"\\;\\;T3ans\\;\\;"
-            ,"\\;\\;T4ans\\;\\;"
-            ,"\\;\\;T5ans\\;\\;"
-            ,"\\;\\;T6ans\\;\\;"
-            ,"\\;\\;T7ans\\;\\;"
-            ,"\\;\\;T8ans\\;\\;"
-            ,"\\;\\;T9ans\\;\\;"
-            ,"\\;\\;T10ans\\;\\;"};
+    private static final int problemAmount = 10;
 	private static String[] problems = new String[10];
 	private static String[] answers = new String[10];
 
@@ -74,14 +53,14 @@ public class Main {
 			
 			Pattern[] patternsTeht = new Pattern[10];
 			
-			for (int i = 0; i < regexteht.length; i++) {
-			    patternsTeht[i] = Pattern.compile(regexteht[i]);
+			for (int i = 0; i < problemAmount; i++) {
+			    patternsTeht[i] = Pattern.compile("\\;\\;T" + i+1 + "\\;\\;");
 			}
 			
 			Pattern[] patternsVast = new Pattern[10];
 			
-			for (int i = 0; i < regexvast.length; i++) {
-			    patternsVast[i] = Pattern.compile(regexvast[i]);
+			for (int i = 0; i < problemAmount; i++) {
+			    patternsVast[i] = Pattern.compile("\\;\\;T" + i+1 + "ans\\;\\;");
 			}
 			
 			Pattern tunnisteregex = Pattern.compile("\\;\\;tunniste\\;\\;");
