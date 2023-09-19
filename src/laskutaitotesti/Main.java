@@ -1,7 +1,7 @@
 package laskutaitotesti;
 
 import java.io.BufferedReader;
-
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -14,15 +14,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import uk.ac.ed.ph.jacomax.JacomaxSimpleConfigurator;
-import uk.ac.ed.ph.jacomax.MaximaConfiguration;
-import uk.ac.ed.ph.jacomax.MaximaInteractiveProcess;
-import uk.ac.ed.ph.jacomax.MaximaProcessLauncher;
-import uk.ac.ed.ph.jacomax.MaximaTimeoutException;
-
 import java.lang.Math;
-
 
 public class Main {
 	
@@ -30,19 +22,10 @@ public class Main {
 	private static String[] problems = new String[10];
 	private static String[] answers = new String[10];
 
+	/**
+	 * @param args does nothing
+	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-	    
-	    MaximaConfiguration configuration = JacomaxSimpleConfigurator.configure();
-	    MaximaProcessLauncher launcher = new MaximaProcessLauncher(configuration);
-	    MaximaInteractiveProcess process = launcher.launchInteractiveProcess();
-	    try {
-            System.out.println(process.executeCall("1+2;"));
-        } catch (MaximaTimeoutException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
-        }
-	    process.terminate();
 	    
 	    try {
 	        ProcessBuilder builder = new ProcessBuilder(
@@ -63,36 +46,18 @@ public class Main {
 
 	    for (int nro = 1; nro < 11; nro++){
 	    makeProblems();
-		//System.out.println(prob2);
-		System.out.println(problems[3]);
-		System.out.println(answers[3]);
-		System.out.println(isMultiple(6,3));
 		try {
 			var rivit = readFromFile("template.tex");
-			
-			Pattern[] patternsTeht = new Pattern[10];
-			
-			for (int i = 0; i < problemAmount; i++) {
-			    patternsTeht[i] = Pattern.compile("\\;\\;T" + i+1 + "\\;\\;");
-			}
-			
-			Pattern[] patternsVast = new Pattern[10];
-			
-			for (int i = 0; i < problemAmount; i++) {
-			    patternsVast[i] = Pattern.compile("\\;\\;T" + i+1 + "ans\\;\\;");
-			}
-			
-			Pattern tunnisteregex = Pattern.compile("\\;\\;tunniste\\;\\;");
 			
 			int i = -1;
 			for (var rivi: rivit) {
 				i++;
 				
-				for (int j = 0; j < patternsTeht.length; j++) {
+				for (int j = 0; j < problemAmount; j++) {
 				    if (problems[j] == null || answers[j] == null) continue;
-				    Matcher matcher1 = patternsTeht[j].matcher(rivi);
-				    Matcher matcher2 = patternsVast[j].matcher(rivi);
-				    Matcher matcher3 = tunnisteregex.matcher(rivi);
+				    Matcher matcher1 = Pattern.compile("\\;\\;T" + j+1 + "\\;\\;").matcher(rivi);
+				    Matcher matcher2 = Pattern.compile("\\;\\;T" + j+1 + "ans\\;\\;").matcher(rivi);
+				    Matcher matcher3 = Pattern.compile("\\;\\;tunniste\\;\\;").matcher(rivi);
 				    if (matcher1.find()) {
 				        String uusi = rivi.replace(";;T"+(j+1)+ ";;", problems[j]);
 				        rivit.set(i, uusi);
@@ -133,85 +98,98 @@ public class Main {
     }
 
 
-    private static void makeProblem(int num) {
-		switch (num) {
+    private static void makeProblem(int i) {
+		switch (i) {
 			case 1:{
 				int a = randInt(3,50);
+				while (a%5 == 0) {
+					a = randInt(3,37);
+				}
 				
-				while (a%5 == 0) a = randInt(3,37);
 				double d = a / 25.0;
 				
-				int nom = (int) (d*100);
-				int denom = 100;
+				int yla1 = (int) (d*100);
+				int ala1 = 100;
 				
-				int gcd = gcd(nom, denom);
+				int gcd1 = gcd(yla1, ala1);
 				
-				nom = nom/gcd; denom = denom/gcd;
-				problems[num-1] = Double.toString(d);
-				answers[num-1] = "\\frac{"+ nom +"}{"+ denom + "}";
+				yla1 = yla1/gcd1; ala1 = ala1/gcd1;
+				problems[i-1] = Double.toString(d);
+				answers[i-1] = "\\frac{"+ yla1 +"}{"+ ala1 + "}";
 				
 			break;}
         case 2:{
-				var decim = randDouble(1,4);
+				var desim = randDouble(1,4);
 				var exp = randInt(-5, -9);
+				String pr = desim + "\\cdot 10^{"+ exp + "}";
+				problems[i-1] = pr;
 				
-				problems[num-1]  = decim + "\\cdot 10^{"+ exp + "}";
-				var len = decim.toString().length() + Math.abs(exp) -2;
+				var len = desim.toString().length() + Math.abs(exp) -2;
 				
-				answers[num-1] = String.format("%."+ len + "f", decim.doubleValue()*Math.pow(10, exp));
+				//String ans = new BigDecimal(desim.doubleValue()* Math.pow(10, exp)).toPlainString()	;
+				//var ss = ans.substring(0, len);
+				
+				String formatString = "%."+ len + "f";
+				
+				String ans = String.format(formatString,desim.doubleValue()*Math.pow(10, exp));
+				
+				answers[i-1] = ans;
 				
 			break;}
         case 3:{
-				int b = randInt(3, 10);
-				int d = randInt(3,10);
+				int f = randInt(3, 10);
+				int h = randInt(3,10);
 				
-				while (d == b || isMultiple(d,b)) {
-					d = randInt(3,10);
+				while (h == f || isMultiple(h,f)) {
+					h = randInt(3,10);
 				}
 				
-				int a = randInt(2,b);
-				while (gcd(a,b) > 1) {
-					a = randInt(2,b);
+				int e = randInt(2,f);
+				while (gcd(e,f) > 1) {
+					e = randInt(2,f);
 				}
 				
-				int c = randInt(2,d);
-				while (gcd(c,d) > 1) {
-					c = randInt(2,d);
+				int g = randInt(2,h);
+				while (gcd(g,h) > 1) {
+					g = randInt(2,h);
 				}
 				int sgn = randSgn();
 				
+				if (sgn > 0) {
+					problems[i-1] = "\\frac{" + e + "}{"+ f +"}" + "+" + "\\frac{" + g + "}{"+ h +"}";
+				}else {
+					problems[i-1] = "\\frac{" + e + "}{"+ f +"}" + "-" + "\\frac{" + g + "}{"+ h +"}";
+				}
 				
-				problems[num-1] = (sgn>10) ? "\\frac{" + a + "}{"+ b +"}" + "+" + "\\frac{" + c + "}{"+ d +"}" : "\\frac{" + a + "}{"+ b +"}" + "-" + "\\frac{" + c + "}{"+ d +"}";
+				int ylak = e*h + sgn*g*f;
+				int alak = h*f;
 				
-				int nom = a*d + sgn*c*b;
-				int denom = d*b;
-				
-				int gcd = gcd(denom, nom);
-				answers[num-1] = "\\frac{" + nom/gcd + "}{"+ denom/gcd +"}";
+				int gcd = gcd(alak, ylak);
+				answers[i-1] = "\\frac{" + ylak/gcd + "}{"+ alak/gcd +"}";
 				
 			break;}
         case 4:{
-				int b = randInt(3, 13);
-				int d = randInt(3,13);
-				int a = randInt(2, b);
-				int c = randInt(2, d);
+				int j = randInt(3, 13);
+				int l = randInt(3,13);
+				int i2 = randInt(2, j);
+				int k = randInt(2, l);
 				
-				while (b*d > 108 || gcd(a,b)>1 || gcd(c,d)>1 || gcd(a*c, b*d) == 1 || b == c || a == d) {
-					b = randInt(3, 13);
-					d = randInt(3,13);
-					a = randInt(2, b);
-					c = randInt(2, d);
+				while (j*l > 108 || gcd(i2,j)>1 || gcd(k,l)>1 || gcd(i2*k, j*l) == 1 || j == k || i2 == l) {
+					j = randInt(3, 13);
+					l = randInt(3,13);
+					i2 = randInt(2, j);
+					k = randInt(2, l);
 				}
 				
-				int nom = a*c;
-				int denom = b*d;
+				int yla = i2*k;
+				int ala = j*l;
 				
-				int gcd = gcd(nom, denom);
-				nom = nom/gcd;
-				denom = denom/gcd;
+				int gcd4 = gcd(yla, ala);
+				yla = yla/gcd4;
+				ala = ala/gcd4;
 				
-				problems[num-1] = "\\frac{"+a+"}{"+b+"}\\cdot\\frac{"+c+"}{"+d+"}";
-				answers[num-1] = "\\frac{"+nom+"}{"+denom+"}";
+				problems[i-1] = "\\frac{"+i2+"}{"+j+"}\\cdot\\frac{"+k+"}{"+l+"}";
+				answers[i-1] = "\\frac{"+yla+"}{"+ala+"}";
 			
             break;}
         case 5:{
