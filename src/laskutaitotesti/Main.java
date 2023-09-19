@@ -108,88 +108,78 @@ public class Main {
 				
 				double d = a / 25.0;
 				
-				int yla1 = (int) (d*100);
-				int ala1 = 100;
+				int nom = (int) (d*100);
+				int denom = 100;
 				
-				int gcd1 = gcd(yla1, ala1);
+				int gcd = gcd(nom, denom);
 				
-				yla1 = yla1/gcd1; ala1 = ala1/gcd1;
+				nom = nom/gcd; denom = denom/gcd;
 				problems[i-1] = Double.toString(d);
-				answers[i-1] = "\\frac{"+ yla1 +"}{"+ ala1 + "}";
+				answers[i-1] = "\\frac{"+ nom +"}{"+ denom + "}";
 				
 			break;}
         case 2:{
-				var desim = randDouble(1,4);
+				var decim = randDouble(1,4);
 				var exp = randInt(-5, -9);
-				String pr = desim + "\\cdot 10^{"+ exp + "}";
-				problems[i-1] = pr;
+				problems[i-1] = decim + "\\cdot 10^{"+ exp + "}";
 				
-				var len = desim.toString().length() + Math.abs(exp) -2;
+				var len = decim.toString().length() + Math.abs(exp) -2;
 				
-				//String ans = new BigDecimal(desim.doubleValue()* Math.pow(10, exp)).toPlainString()	;
-				//var ss = ans.substring(0, len);
-				
-				String formatString = "%."+ len + "f";
-				
-				String ans = String.format(formatString,desim.doubleValue()*Math.pow(10, exp));
-				
-				answers[i-1] = ans;
+				answers[i-1] = String.format("%."+ len + "f",decim.doubleValue()*Math.pow(10, exp));
 				
 			break;}
         case 3:{
-				int f = randInt(3, 10);
-				int h = randInt(3,10);
+				int b = randInt(3, 10);
+				int d = randInt(3,10);
 				
-				while (h == f || isMultiple(h,f)) {
-					h = randInt(3,10);
+				while (d == b || isMultiple(d,b)) {
+					d = randInt(3,10);
 				}
 				
-				int e = randInt(2,f);
-				while (gcd(e,f) > 1) {
-					e = randInt(2,f);
+				int a = randInt(2,b);
+				while (gcd(a,b) > 1) {
+					a = randInt(2,b);
 				}
 				
-				int g = randInt(2,h);
-				while (gcd(g,h) > 1) {
-					g = randInt(2,h);
+				int c = randInt(2,d);
+				while (gcd(c,d) > 1) {
+					c = randInt(2,d);
 				}
 				int sgn = randSgn();
 				
-				if (sgn > 0) {
-					problems[i-1] = "\\frac{" + e + "}{"+ f +"}" + "+" + "\\frac{" + g + "}{"+ h +"}";
-				}else {
-					problems[i-1] = "\\frac{" + e + "}{"+ f +"}" + "-" + "\\frac{" + g + "}{"+ h +"}";
-				}
+				problems[i-1] = (sgn > 0) ? "\\frac{" + a + "}{"+ b +"}" + "+" + "\\frac{" + c + "}{"+ d +"}"
+				        : "\\frac{" + a + "}{"+ b +"}" + "-" + "\\frac{" + c + "}{"+ d +"}";
 				
-				int ylak = e*h + sgn*g*f;
-				int alak = h*f;
 				
-				int gcd = gcd(alak, ylak);
-				answers[i-1] = "\\frac{" + ylak/gcd + "}{"+ alak/gcd +"}";
+				int nom = a*d + sgn*c*b;
+				int denom = d*b;
+				
+				int gcd = gcd(denom, nom);
+				answers[i-1] = "\\frac{" + nom/gcd + "}{"+ denom/gcd +"}";
 				
 			break;}
         case 4:{
-				int j = randInt(3, 13);
-				int l = randInt(3,13);
-				int i2 = randInt(2, j);
-				int k = randInt(2, l);
+				int b = randInt(3, 13);
+				int d = randInt(3,13);
+				int a = randInt(2, b);
+				int c = randInt(2, d);
 				
-				while (j*l > 108 || gcd(i2,j)>1 || gcd(k,l)>1 || gcd(i2*k, j*l) == 1 || j == k || i2 == l) {
-					j = randInt(3, 13);
-					l = randInt(3,13);
-					i2 = randInt(2, j);
-					k = randInt(2, l);
+				while (b*d > 108 || gcd(a,b)>1 || gcd(c,d)>1 || gcd(a*c, b*d) == 1 || b == c || a == d) {
+					b = randInt(3, 13);
+					d = randInt(3,13);
+					a = randInt(2, b);
+					c = randInt(2, d);
 				}
 				
-				int yla = i2*k;
-				int ala = j*l;
+				int nom = a*c;
+				int denom = b*d;
 				
-				int gcd4 = gcd(yla, ala);
-				yla = yla/gcd4;
-				ala = ala/gcd4;
+				int gcd = gcd(nom, denom);
+				nom = nom/gcd;
+				denom = denom/gcd;
 				
-				problems[i-1] = "\\frac{"+i2+"}{"+j+"}\\cdot\\frac{"+k+"}{"+l+"}";
-				answers[i-1] = "\\frac{"+yla+"}{"+ala+"}";
+				problems[i-1] = "\\frac{"+a+"}{"+b+"}\\cdot\\frac{"+c+"}{"+d+"}";
+				answers[i-1] = "\\frac{"+nom+"}{"+denom+"}";
 			
             break;}
         case 5:{
@@ -265,10 +255,7 @@ public class Main {
     // method to calculate gcd of two numbers
     static int gcd(int a, int b)
     {
-        if (a == 0)
-            return b;
- 
-        return gcd(b % a, a);
+        return (a == 0) ?b : gcd(b%a, a);
     }
     
     private static boolean isMultiple(int a, int b) {
@@ -312,8 +299,7 @@ public class Main {
 	
 	
 	private static BigDecimal randDouble(int min, int max) {
-		double random = ThreadLocalRandom.current().nextDouble(min, max);
-		return truncateDecimal(random, 6);
+		return truncateDecimal(ThreadLocalRandom.current().nextDouble(min, max), 6);
 	}
 	
 	
@@ -337,10 +323,9 @@ public class Main {
 	@SuppressWarnings("deprecation")
 	private static BigDecimal truncateDecimal(double x,int numberofDecimals)
 	{
-	    if ( x > 0) {
-	        return new BigDecimal(String.valueOf(x)).setScale(numberofDecimals, BigDecimal.ROUND_FLOOR);
-	    }
-        return new BigDecimal(String.valueOf(x)).setScale(numberofDecimals, BigDecimal.ROUND_CEILING);
+	   
+        return ( x > 0) ? new BigDecimal(String.valueOf(x)).setScale(numberofDecimals, BigDecimal.ROUND_FLOOR)
+	    : new BigDecimal(String.valueOf(x)).setScale(numberofDecimals, BigDecimal.ROUND_CEILING);
 	}
 	
 
