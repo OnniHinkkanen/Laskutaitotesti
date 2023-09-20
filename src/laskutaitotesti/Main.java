@@ -55,8 +55,8 @@ public class Main {
 				
 				for (int j = 0; j < problemAmount; j++) {
 				    if (problems[j] == null || answers[j] == null) continue;
-				    Matcher matcher1 = Pattern.compile("\\;\\;T" + j+1 + "\\;\\;").matcher(rivi);
-				    Matcher matcher2 = Pattern.compile("\\;\\;T" + j+1 + "ans\\;\\;").matcher(rivi);
+				    Matcher matcher1 = Pattern.compile("\\;\\;T" + (j+1) + "\\;\\;").matcher(rivi);
+				    Matcher matcher2 = Pattern.compile("\\;\\;T" + (j+1) + "ans\\;\\;").matcher(rivi);
 				    Matcher matcher3 = Pattern.compile("\\;\\;tunniste\\;\\;").matcher(rivi);
 				    if (matcher1.find()) {
 				        String uusi = rivi.replace(";;T"+(j+1)+ ";;", problems[j]);
@@ -202,12 +202,18 @@ public class Main {
             switch(jarj){
             case 1:
                 vast = p1.arvo() + p2.arvo() -p3.arvo();
-                break;
+                problems[i-1] = "\\frac{" +p1.toString() +"\\cdot"+p2.toString()+"}{"+p3.toString()+"}";
+                answers[i-1] = "a^{" + vast +"}";              
+                                break;
             case 2: 
                 vast = p2.arvo() + p3.arvo() -p1.arvo();
+                problems[i-1] = "\\frac{"+p2.toString() +" \\cdot "+p3.toString()+"}{"+p1.toString() +"}";
+                answers[i-1] = "a^{" + vast +"}";              
                 break;
             case 3:
                 vast = p3.arvo() + p1.arvo() -p2.arvo();
+                problems[i-1] = "\\frac{"+p3.toString()+" \\cdot "+p1.toString() +"}{"+p2.toString()+"}";
+                answers[i-1] = "a^{" + vast +"}";
                 break;
             default:
                 break;
@@ -233,12 +239,18 @@ public class Main {
                 switch(jarj){
                 case 1:
                     vast = p1.arvo() + p2.arvo() -p3.arvo();
+                    problems[i-1] = "\\frac{" +p1.toString() +"\\cdot"+p2.toString()+"}{"+p3.toString()+"}";
+                    answers[i-1] = "a^{" + vast +"}";              
                     break;
                 case 2: 
                     vast = p2.arvo() + p3.arvo() -p1.arvo();
+                    problems[i-1] = "\\frac{"+p2.toString() +" \\cdot "+p3.toString()+"}{"+p1.toString() +"}";
+                    answers[i-1] = "a^{" + vast +"}";              
                     break;
                 case 3:
                     vast = p3.arvo() + p1.arvo() -p2.arvo();
+                    problems[i-1] = "\\frac{"+p3.toString()+" \\cdot "+p1.toString() +"}{"+p2.toString()+"}";
+                    answers[i-1] = "a^{" + vast +"}";
                     break;
                 default:
                     break;
@@ -341,7 +353,7 @@ public class Main {
 		
 		@Override
         public int arvo() {
-			return a^b;
+			return (int)Math.pow(a, b);
 		}
 		
 		@Override
