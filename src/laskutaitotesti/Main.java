@@ -27,6 +27,9 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 	    
+		String sus = callMaxima("denom(ratsimp(3/(x+2)+2/(x-1)));");
+		
+		System.out.println();
 
 
 	    for (int nro = 1; nro < 11; nro++){
@@ -79,6 +82,7 @@ public class Main {
         makeProblem(3);
         makeProblem(4);
         makeProblem(5);
+        makeProblem(7);
         makeProblem(9);
         
     }
@@ -245,14 +249,24 @@ public class Main {
             System.out.println();
 			break;}
         case 7:{
-            int a = 0, b=0, c=0, d=0;
+            int a = 0, b=0, c=0, d=0, divis = 1;
             
-            while(a == 0 || b == 0 || c == 0 || d == 0) {
+            while(a == 0 || b == 0 || c == 0 || d == 0 || b == d || divis > 0) {
                 a = randInt(1,5);
                 b = randInt(-3, 4);
                 c = randInt(-3, 4);
                 d = randInt(-3, 4);
-                   
+                
+                String poly = a +"/(x+"+b+") + ("+ c +")/(x +"+d+")";
+                String num =callMaxima("num(ratsimp("+poly+"));");
+                String denom = callMaxima("denom(ratsimp("+poly+"));");   
+                
+                //Tässä numeron ja x:n väliin kertomerkki regexillä
+                
+                String div = callMaxima("first(divide("+num+","+denom+"));");
+                
+                divis = Integer.parseInt(div);
+                System.out.println();
             }
             
             break;
@@ -267,8 +281,9 @@ public class Main {
     		}
     		
     		String eq = callMaxima("ratsimp("+ b +"*(x +" + a +"/"+b+")*(x+"+c +"));");
-    		var split = eq.split("(?<=\\d\\sx)\\s\\s", 2);
-    		problems[i-1] = split[0] + "^2" + split[1] + "= 0";
+    		//var split = eq.split("(?<=\\d\\sx)\\s\\s", 2);
+    		//problems[i-1] = split[0] + "^2" + split[1] + "= 0";
+    		problems[i-1] = eq + "= 0";
     		answers[i-1] = "x = " +(-1 * a) + "/" + b +" tai x = " + (-1 * c);
         	break;
         }
@@ -290,6 +305,7 @@ public class Main {
 	
     private static String callMaxima(String args) {
     	String ans = "";   
+    	List<String> lines = new ArrayList<String>();
         try {
    	        ProcessBuilder builder = new ProcessBuilder(
    	                "cmd.exe", "/c", "maxima -q --batch-string=\""+args +"\"");
@@ -298,11 +314,14 @@ public class Main {
    	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
    	            String line;
    	            String regex = "(?<=(\\(\\%o\\d\\))).*$";
+   	            
    	            while (true) {
    	                line = r.readLine();
    	                if (line == null) { break; }
+   	                
                     Matcher matcher = Pattern.compile(regex).matcher(line);
    	                if (matcher.find()) {ans = line; break;}
+   	                lines.add(line);
    	                System.out.println(line);
    	            }
            } catch (IOException e1) {
@@ -322,8 +341,8 @@ public class Main {
 			    	     
     	    */
     	   var res = ans.split("\\s", 2);
-    	
-    	return res[1].trim();
+    	   return lines.get(lines.size() -1).contains("2") ? res[1].trim().replaceFirst("x", "x^2") : res[1].trim();
+    	//return res[1].trim();
     }
 	
 	private static boolean writeFile(List<String> rivit, String tiednimi) {
