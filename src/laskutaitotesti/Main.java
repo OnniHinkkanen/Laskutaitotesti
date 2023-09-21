@@ -252,20 +252,26 @@ public class Main {
             int a = 0, b=0, c=0, d=0, divis = 1;
             
             while(a == 0 || b == 0 || c == 0 || d == 0 || b == d || divis > 0) {
-                a = randInt(1,5);
-                b = randInt(-3, 4);
-                c = randInt(-3, 4);
-                d = randInt(-3, 4);
+                a = randInt(1,5, true);
+                b = randInt(-3, 4, true);
+                c = randInt(-3, 4, true);
+                d = randInt(-3, 4, true);
                 
                 String poly = a +"/(x+"+b+") + ("+ c +")/(x +"+d+")";
                 String num =callMaxima("num(ratsimp("+poly+"));");
                 String denom = callMaxima("denom(ratsimp("+poly+"));");   
                 
                 //Tässä numeron ja x:n väliin kertomerkki regexillä
+                String multRegex = "(?<=\\d)\\s(?=x)";
+                num = num.replaceAll(multRegex, "*");
+                denom = denom.replaceAll(multRegex, "*");
                 
-                String div = callMaxima("first(divide("+num+","+denom+"));");
-                
+                String div = callMaxima("second(divide("+num+","+denom+"));").replace(" ", "");
+                try {
                 divis = Integer.parseInt(div);
+                } catch (NumberFormatException e) {
+                    divis = 10;
+                }
                 System.out.println();
             }
             
@@ -293,6 +299,16 @@ public class Main {
 	}
 	
 	
+    private static int randInt(int i, int j, boolean b) {
+        int rand = 0;
+        while (rand == 0) {
+            rand = randInt(i, j);
+        }
+        
+        return rand;
+    }
+
+
     // method to calculate gcd of two numbers
     static int gcd(int a, int b)
     {
