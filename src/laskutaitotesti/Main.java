@@ -27,22 +27,7 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 	    
-	    try {
-	        ProcessBuilder builder = new ProcessBuilder(
-	                "cmd.exe", "/c", "maxima -q --batch-string=(2+1)*4;");
-	            builder.redirectErrorStream(true);
-	            Process p = builder.start();
-	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	            String line;
-	            while (true) {
-	                line = r.readLine();
-	                if (line == null) { break; }
-	                System.out.println(line);
-	            }
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
+
 
 	    for (int nro = 1; nro < 11; nro++){
 	    makeProblems();
@@ -94,6 +79,7 @@ public class Main {
         makeProblem(3);
         makeProblem(4);
         makeProblem(5);
+        makeProblem(9);
         
     }
 
@@ -258,6 +244,20 @@ public class Main {
             }
             System.out.println();
 			break;}
+    	case 9:{
+    		int a=0,b=0,c=0;
+    		while(a==0 ||gcd(a,b) > 1 || gcd(a,b) < -1 || c == 0) {
+    			a = randSgn()*randInt(1, 7);
+    			b = randInt(2, 7);
+    			
+    			c = randInt(-3, 4);
+    		}
+    		
+    		String eq = callMaxima("ratsimp("+ b +"*(x +" + a +"/"+b+")*(x+"+c +"));");
+    		
+    		System.out.println();
+        	break;
+        }
         default:
 		}
 			
@@ -274,6 +274,39 @@ public class Main {
         return a%b == 0 || b%a == 0;
     }
 	
+    private static String callMaxima(String args) {
+    	   try {
+   	        ProcessBuilder builder = new ProcessBuilder(
+   	                "cmd.exe", "/c", "maxima -q --batch-string=\""+args +"\"");
+   	            builder.redirectErrorStream(true);
+   	            Process p = builder.start();
+   	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+   	            String line;
+   	            while (true) {
+   	                line = r.readLine();
+   	                if (line == null) { break; }
+   	                System.out.println(line);
+   	            }
+           } catch (IOException e1) {
+               // TODO Auto-generated catch block
+               e1.printStackTrace();
+           }
+    	   /*
+    	    Picked up _JAVA_OPTIONS: -Djava.vendor="Sun Microsystems Inc."
+
+			'\\FILESERVICES.AD.JYU.FI\homes\onukilla\Desktop\Laskutaitotesti'
+			CMD.EXE was started with the above path as the current directory.
+			UNC paths are not supported.  Defaulting to Windows directory.
+			(%i1) ratsimp(5*(x+(-6)/5)*(x+2))
+			                                   2
+			(%o1)                           5 x  + 4 x - 12
+			    	     
+			    	     
+    	    */
+    	   
+    	
+    	return "";
+    }
 	
 	private static boolean writeFile(List<String> rivit, String tiednimi) {
 		
