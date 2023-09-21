@@ -244,6 +244,19 @@ public class Main {
             }
             System.out.println();
 			break;}
+        case 7:{
+            int a = 0, b=0, c=0, d=0;
+            
+            while(a == 0 || b == 0 || c == 0 || d == 0) {
+                a = randInt(1,5);
+                b = randInt(-3, 4);
+                c = randInt(-3, 4);
+                d = randInt(-3, 4);
+                   
+            }
+            
+            break;
+        }
     	case 9:{
     		int a=0,b=0,c=0;
     		while(a==0 ||gcd(a,b) > 1 || gcd(a,b) < -1 || c == 0) {
