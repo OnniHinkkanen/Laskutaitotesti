@@ -188,7 +188,7 @@ public class Main {
             switch(jarj){
             case 1:
                 vast = p1.arvo() + p2.arvo() -p3.arvo();
-                problems[i-1] = "\\frac{" +p1.toString() +"\\cdot"+p2.toString()+"}{"+p3.toString()+"}";
+                problems[i-1] = "\\frac{" +p1.toString() +"\\cdot "+p2.toString()+"}{"+p3.toString()+"}";
                 answers[i-1] = "a^{" + vast +"}";              
                                 break;
             case 2: 
@@ -225,7 +225,7 @@ public class Main {
                 switch(jarj){
                 case 1:
                     vast = p1.arvo() + p2.arvo() -p3.arvo();
-                    problems[i-1] = "\\frac{" +p1.toString() +"\\cdot"+p2.toString()+"}{"+p3.toString()+"}";
+                    problems[i-1] = "\\frac{" +p1.toString() +"\\cdot "+p2.toString()+"}{"+p3.toString()+"}";
                     answers[i-1] = "a^{" + vast +"}";              
                     break;
                 case 2: 
@@ -254,8 +254,9 @@ public class Main {
     		}
     		
     		String eq = callMaxima("ratsimp("+ b +"*(x +" + a +"/"+b+")*(x+"+c +"));");
-    		
-    		System.out.println();
+    		var split = eq.split("(?<=\\d\\sx)\\s\\s", 2);
+    		problems[i-1] = split[0] + "^2" + split[1] + "= 0";
+    		answers[i-1] = "x = " +(-1 * a) + "/" + b +" tai x = " + (-1 * c);
         	break;
         }
         default:
@@ -275,16 +276,20 @@ public class Main {
     }
 	
     private static String callMaxima(String args) {
-    	   try {
+    	String ans = "";   
+        try {
    	        ProcessBuilder builder = new ProcessBuilder(
    	                "cmd.exe", "/c", "maxima -q --batch-string=\""+args +"\"");
    	            builder.redirectErrorStream(true);
    	            Process p = builder.start();
    	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
    	            String line;
+   	            String regex = "(?<=(\\(\\%o\\d\\))).*$";
    	            while (true) {
    	                line = r.readLine();
    	                if (line == null) { break; }
+                    Matcher matcher = Pattern.compile(regex).matcher(line);
+   	                if (matcher.find()) {ans = line; break;}
    	                System.out.println(line);
    	            }
            } catch (IOException e1) {
@@ -303,9 +308,9 @@ public class Main {
 			    	     
 			    	     
     	    */
-    	   
+    	   var res = ans.split("\\s", 2);
     	
-    	return "";
+    	return res[1].trim();
     }
 	
 	private static boolean writeFile(List<String> rivit, String tiednimi) {
