@@ -67,6 +67,28 @@ public class Main {
 			
 			writeFile(rivit, "laskutaitotesti1_L1T" + nro + "A.tex");
 			
+			// This code example demonstrates how to create a PDF from TeX source file.
+			// Working directory
+			String dataDir = System.getProperty("user.dir");
+
+			// Create typesetting options.
+			TeXOptions options = TeXOptions.consoleAppOptions(TeXConfig.objectLaTeX());
+
+			// Specify a file system working directory for input.
+			options.setInputWorkingDirectory(new InputFileSystemDirectory(dataDir));
+
+			// Specify a file system working directory for output.
+			options.setOutputWorkingDirectory(new OutputFileSystemDirectory(dataDir));
+
+			// Specify memory stream as output terminal.
+			options.setTerminalOut(new OutputMemoryTerminal());
+
+			// Set options for rendering into PDF format.
+			options.setSaveOptions(new PdfSaveOptions());
+
+			// Run typesetting.
+			new TeXJob(dataDir + "laskutaitotesti1_L1T1A.tex", new PdfDevice(), options).run();
+			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -251,7 +273,7 @@ public class Main {
         case 7:{
             int a = 0, b=0, c=0, d=0, divis = 1;
             
-            while(a == 0 || b == 0 || c == 0 || d == 0 || b == d || divis > 0) {
+            while(a == 0 || b == 0 || c == 0 || d == 0 || b == d || divis == 0) {
                 a = randInt(1,5, true);
                 b = randInt(-3, 4, true);
                 c = randInt(-3, 4, true);
@@ -266,12 +288,29 @@ public class Main {
                 num = num.replaceAll(multRegex, "*");
                 denom = denom.replaceAll(multRegex, "*");
                 
+                
+                //Tämä pitää miettiä uudestaan, ehkä
                 String div = callMaxima("second(divide("+num+","+denom+"));").replace(" ", "");
                 try {
                 divis = Integer.parseInt(div);
                 } catch (NumberFormatException e) {
-                    divis = 10;
+                    divis = 0;
                 }
+                
+                StringBuilder sb = new StringBuilder();
+                sb.append("\\frac{" + a + "}{x");
+                if (b > 0 ) sb.append("+" +b + "}");
+                else sb.append(b + "}");
+                
+                if (c > 0) sb.append("+ \\frac{ " + c);
+                else sb.append("- \\frac{"+ Math.abs(c));
+                
+                if (d > 0) sb.append("}{x + " + d + "}");
+                else sb.append("}{x - " + Math.abs(d) + "}");
+                
+                //KORJAA
+                problems[i-1] = sb.toString() ;
+                answers[i-1] = "\\frac{" + num + "}{"+ denom + "}";
                 System.out.println();
             }
             

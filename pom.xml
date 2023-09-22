@@ -11,6 +11,11 @@
 		<name>Jacomax</name>
 		<url>https://www2.ph.ed.ac.uk/maven2/</url>
 	</repository>
+	<repository>
+	    <id>AsposeJavaAPI</id>
+	    <name>Aspose Java API</name>
+	    <url>https://repository.aspose.com/repo/</url>
+	</repository>
 </repositories>
 <dependencies>
 	<dependency> 
@@ -29,6 +34,14 @@
 	  <artifactId>jacomax</artifactId>
 	  <version>0.2.3</version>
 	</dependency>
+	
+	<dependency>
+	    <groupId>com.aspose</groupId>
+	    <artifactId>aspose-tex</artifactId>
+	    <version>21.11</version>
+	    <type>jar</type>
+	</dependency>
+	
   </dependencies>
 
  <build>
