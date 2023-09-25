@@ -1,4 +1,3 @@
-package laskutaitotesti;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -21,19 +20,85 @@ public class Main {
     private static final int problemAmount = 10;
 	private static String[] problems = new String[10];
 	private static String[] answers = new String[10];
+	
+	private static final String[] p6 = {
+			"2x(4x^2 - x)(1 + 2x)",
+			"-3x(2x^3 + 3x^2)(1 - x)",
+			"x(5x^2 - 3x)(1 + 4x)",
+			"-4x(3x^3 - 2x^2)(1 - 3x)",
+			"2x(2x^2 + 5x)(1 + x)",
+			"-x(6x^2 - 2x)(1 - 2x)",
+			"3x(3x^3 + 4x^2)(1 + 3x)",
+			"-4x(2x^2 - x)(1 - x)",
+			"x(7x^2 + x)(1 + 5x)",
+			"-5x(4x^3 - 3x^2)(1 - 4x)",
 
+			"2x(4x^2 - x) + (1 + 2x)",
+			"-3x(2x^3 + 3x^2) - (1 - x)",
+			"x(5x^2 - 3x) + (1 + 4x)",
+			"-4x(3x^3 - 2x^2) - (1 - 3x)",
+			"2x(2x^2 + 5x) + (1 + x)",
+			"-x(6x^2 - 2x) - (1 - 2x)",
+			"3x(3x^3 + 4x^2) + (1 + 3x)",
+			"-4x(2x^2 - x) - (1 - x)",
+			"x(7x^2 + x) + (1 + 5x)",
+			"-5x(4x^3 - 3x^2) - (1 - 4x)"
+	};
+
+	private static final String[] p8 = {
+			"4x - (2x + 2) = 2 - 3x",
+			"2x - (x+3) = 1 - 4x",
+			"5x - (2x-1) = 4 - 6x",
+			"6x - (3x+4) = 5 - 7x",
+			"7x - (4x-2) = 6 - 8x",
+			"3x - (x+5) = 2 - 2x",
+			"8x - (3x+1) = 7 - 9x",
+			"9x - (5x-3) = 8 - 10x",
+			"4x - (2x-4) = 3 - 5x",
+			"10x - (4x+2) = 9 - 11x",
+			"2x + 3(5 - 2x) = 9",
+			"2x + 3(6 + x) = 10",
+			"2x + 3(4 - 3x) = 8",
+			"2x + 3(8 - 2x) = 12",
+			"2x + 3(3 + 2x) = 7",
+			"2x + 3(7 - x) = 11",
+			"2x + 3(9 - 2x) = 15",
+			"2x + 3(5 + 3x) = 13",
+			"2x + 3(6 - x) = 12",
+			"2x + 3(4 + 4x) = 14"
+	};
+	
+	private static final String[] p10 = {
+			"pQr = (mS+o)/(lK)",
+			"eFg = (hI+j)/(kS)",
+			"xYz = (rS+a)/(vB)",
+			"dEf = (gS+i)/(jK)",
+			"uVw = (oP+t)/(qS)",
+			"aBc = (dE+S)/(gH)",
+			"lMn = (pS+r)/(sT)",
+			"zXy = (vW+S)/(uV)",
+			"kLm = (nO+q)/(rS)",
+			"gHi = (jS+l)/(mN)",
+			"uVx = (aS) / (bY + t)",
+			"pQr = (lK) / (mS + o)",
+			"eFg = (kL) / (hI + S)",
+			"xYz = (vB) / (rA + S)",
+			"dEf = (jK) / (gS + i)",
+			"uVw = (qS) / (oP + t)",
+			"aBc = (gS) / (dE + f)",
+			"lMn = (sT) / (pS + r)",
+			"zXy = (uV) / (vS + x)",
+			"kLm = (rS) / (nO + q)"
+	};
 	/**
 	 * @param args does nothing
 	 */
 	public static void main(String[] args) {
 	    
-		String sus = callMaxima("denom(ratsimp(3/(x+2)+2/(x-1)));");
-		
-		System.out.println();
 
 
-	    for (int nro = 1; nro < 11; nro++){
-	    makeProblems();
+	    for (int nro = 21; nro < 41; nro++){
+	    makeProblems(nro);
 		try {
 			var rivit = readFromFile("template.tex");
 			
@@ -67,6 +132,8 @@ public class Main {
 			
 			writeFile(rivit, "laskutaitotesti1_L1T" + nro + "A.tex");
 			
+			
+			/*
 			// This code example demonstrates how to create a PDF from TeX source file.
 			// Working directory
 			String dataDir = System.getProperty("user.dir");
@@ -88,6 +155,7 @@ public class Main {
 
 			// Run typesetting.
 			new TeXJob(dataDir + "laskutaitotesti1_L1T1A.tex", new PdfDevice(), options).run();
+			*/
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -98,16 +166,40 @@ public class Main {
 	}
 	
 	
-	private static void makeProblems() {
+	private static void makeProblems(int nro) {
         makeProblem(1);
         makeProblem(2);
         makeProblem(3);
         makeProblem(4);
         makeProblem(5);
+        makeProblem(6, nro);
         makeProblem(7);
+        makeProblem(8, nro);
         makeProblem(9);
+        makeProblem(10, nro);
         
     }
+	
+	private static void makeProblem(int i, int j) {
+		switch (i) {
+    	case 6:{
+    		problems[i-1] = p6[(j-1)%20];
+    		answers[i-1] = "ans";
+    		break;
+        	}
+        case 8: {
+    		problems[i-1] = p8[(j-1)%20];
+    		answers[i-1] = "ans";
+    		break;
+        	}
+		
+		case 10:{
+    		problems[i-1] = p10[(j-1)%20];
+    		answers[i-1] = "ans";
+    		break;
+        	}
+		}
+	}
 
 
     private static void makeProblem(int i) {
