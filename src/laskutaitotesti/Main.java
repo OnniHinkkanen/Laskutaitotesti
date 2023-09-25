@@ -44,6 +44,30 @@ public class Main {
 			"x(7x^2 + x) + (1 + 5x)",
 			"-5x(4x^3 - 3x^2) - (1 - 4x)"
 	};
+	
+	private static final String[] a6 = {
+			"16x^4 +4x^3 -2x^2",
+			"6x^5 + 3x^4 -9x^3",
+			"20x^4 -7x^3 -3x^2",
+			"36x^5 -36x^4 +8x^3",
+			"4x^4 +14x^3 +10x^2",
+			"12x^4 -10x^3 +2x^2",
+			"27x^5 +45x^4 +12x^3",
+			"8x^4 -12x^3 +4x^2",
+			"35x^4 +12x^3 +x^2",
+			"80x^5 -80x^4 +15x^3",
+
+			"8x^3 -2x^2 +20x +1",
+			"-6x^4 -9x^3 + x -1",
+			"5x^3 -3x^2 +4x +1",
+			"-12x^4 +8x^3 +3x -1",
+			"4x^3 +10x^2 +x +1",
+			"-6x^3 +2x^2 +2x -1",
+			"9x^4 +12x^3 +3x +1",
+			"-8x^3 +4x^2 +x -1",
+			"7x^3 +x^2 +5x +1",
+			"-20x^4 +15x^3 +4x -1"
+	};
 
 	private static final String[] p8 = {
 			"4x - (2x + 2) = 2 - 3x",
@@ -68,28 +92,58 @@ public class Main {
 			"2x + 3(4 + 4x) = 14"
 	};
 	
-	private static final String[] p10 = {
-			"pQr = (mS+o)/(lK)",
-			"eFg = (hI+j)/(kS)",
-			"xYz = (rS+a)/(vB)",
-			"dEf = (gS+i)/(jK)",
-			"uVw = (oP+t)/(qS)",
-			"aBc = (dE+S)/(gH)",
-			"lMn = (pS+r)/(sT)",
-			"zXy = (vW+S)/(uV)",
-			"kLm = (nO+q)/(rS)",
-			"gHi = (jS+l)/(mN)",
-			"uVx = (aS) / (bY + t)",
-			"pQr = (lK) / (mS + o)",
-			"eFg = (kL) / (hI + S)",
-			"xYz = (vB) / (rA + S)",
-			"dEf = (jK) / (gS + i)",
-			"uVw = (qS) / (oP + t)",
-			"aBc = (gS) / (dE + f)",
-			"lMn = (sT) / (pS + r)",
-			"zXy = (uV) / (vS + x)",
-			"kLm = (rS) / (nO + q)"
+	private static final String[] a8 = {
+			"x = 4/5",
+			"x = 4/5",
+			"x = 1/3",
+			"x = 9/10",
+			"x = 4/11",
+			"x = 7/4",
+			"x = 4/7",
+			"x = 5/14",
+			"x = -1/7",
+			"x = 11/17",
+			"x = 3/2",
+			"x = -8/5",
+			"x = 4/7",
+			"x = 3",
+			"x = -1/4",
+			"x = 10",
+			"x = 3",
+			"x = -2/11",
+			"x = 6",
+			"x = 1/7"
 	};
+	
+	
+	private static final String[] p10 = {
+			"pQr = \\frac{mS+o}{lK}",
+			"eFg = \\frac{hI+j}{kS}",
+			"xYz = \\frac{rS+a}{vB}",
+			"dEf = \\frac{gS+i}{jK}",
+			"uVw = \\frac{oP+t}{qS}",
+			"aBc = \\frac{dE+S}{gH}",
+			"lMn = \\frac{pS+r}{sT}",
+			"zXy = \\frac{vW+S}{uV}",
+			"kLm = \\frac{nO+q}{rS}",
+			"gHi = \\frac{jS+l}{mN}",
+			
+	};
+
+	private static final String[] a10 = {
+			"S = \\frac{pQrlK -o}{m}",
+			"S = \\frac{hI+j}{eFk}",
+			"S = \\frac{xYzvB-a}{s}",
+			"S = \\frac{dEfjk-i}{g}",
+			"S = \\frac{oP+t}{uVwq}",
+			"S = aBcgH -dE",
+			"S = \\frac{lMnsT -r}{p}",
+			"S = zXyuV -vW",
+			"S = \\frac{nO+q}{rkLm}",
+			"S = \\frac{gHimN}{j}",
+			
+	};
+	
 	/**
 	 * @param args does nothing
 	 */
@@ -97,7 +151,7 @@ public class Main {
 	    
 
 
-	    for (int nro = 21; nro < 41; nro++){
+	    for (int nro = 1; nro < 41; nro++){
 	    makeProblems(nro);
 		try {
 			var rivit = readFromFile("template.tex");
@@ -184,18 +238,18 @@ public class Main {
 		switch (i) {
     	case 6:{
     		problems[i-1] = p6[(j-1)%20];
-    		answers[i-1] = "ans";
+    		answers[i-1] = a6[(j-1)%20];
     		break;
         	}
         case 8: {
     		problems[i-1] = p8[(j-1)%20];
-    		answers[i-1] = "ans";
+    		answers[i-1] = a8[(j-1)%20];
     		break;
         	}
 		
 		case 10:{
-    		problems[i-1] = p10[(j-1)%20];
-    		answers[i-1] = "ans";
+    		problems[i-1] = p10[(j-1)%10];
+    		answers[i-1] = a10[(j-1)%10];
     		break;
         	}
 		}
