@@ -1,6 +1,5 @@
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -151,7 +150,7 @@ public class Main {
 	    
 
 
-	    for (int nro = 1; nro < 41; nro++){
+	    for (int nro = 1; nro < 30; nro++){
 	    makeProblems(nro);
 		try {
 			var rivit = readFromFile("template.tex");
@@ -174,7 +173,7 @@ public class Main {
 				        rivit.set(i, uusi);
 				    }	
 				     if (matcher3.find()) {
-				         String uusi = rivi.replace(";;tunniste;;", "L1T" + nro +"A");
+				         String uusi = rivi.replace(";;tunniste;;", "L1T" + nro +"G");
 				         rivit.set(i, uusi);
 				     }
 				     
@@ -184,7 +183,7 @@ public class Main {
 			//File file = new File("testi.tex");
 			//file.delete();
 			
-			writeFile(rivit, "laskutaitotesti1_L1T" + nro + "A.tex");
+			writeFile(rivit, "laskutaitotesti1_L1T" + nro + "G.tex");
 			
 			
 			/*
@@ -272,18 +271,29 @@ public class Main {
 				int gcd = gcd(nom, denom);
 				
 				nom = nom/gcd; denom = denom/gcd;
-				problems[i-1] = Double.toString(d);
+				problems[i-1] = Double.toString(d).replace(".", "{,}");
 				answers[i-1] = "\\frac{"+ nom +"}{"+ denom + "}";
 				
 			break;}
         case 2:{
 				var decim = randDouble(1,4);
-				var exp = randInt(-5, -9);
-				problems[i-1] = decim + "\\cdot 10^{"+ exp + "}";
-				
+				var exp = (randSgn() == +1) ? randInt(-2, -6) : randInt(2,6);
 				var len = decim.toString().length() + Math.abs(exp) -2;
 				
-				answers[i-1] = String.format("%."+ len + "f",decim.doubleValue()*Math.pow(10, exp));
+				while (decim.toString().substring(decim.toString().length() -1 ).equals("0") || Math.abs(exp) > len) {
+					decim = randDouble(1,4);
+					exp = (randSgn() == +1) ? randInt(-2, -6) : randInt(2,6);
+					len = decim.toString().length() + Math.abs(exp) -2;
+				}
+				problems[i-1] = decim.toString().replace(".", "{,}") + "\\cdot 10^{"+ exp + "}";
+				
+				
+				
+				answers[i-1] = (exp < 0) ?String.format("%."+ len + "f",decim.doubleValue()*Math.pow(10, exp))
+						:String.format("%."+( decim.toString().length() - 2 - Math.abs(exp) )+ "f",decim.doubleValue()*Math.pow(10, exp));
+				
+				//System.out.println(problems[i-1]);
+				//System.out.println(answers[i-1]);
 				
 			break;}
         case 3:{
