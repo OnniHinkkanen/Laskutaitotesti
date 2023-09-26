@@ -92,26 +92,26 @@ public class Main {
 	};
 	
 	private static final String[] a8 = {
-			"x = 4/5",
-			"x = 4/5",
-			"x = 1/3",
-			"x = 9/10",
-			"x = 4/11",
-			"x = 7/4",
-			"x = 4/7",
-			"x = 5/14",
-			"x = -1/7",
-			"x = 11/17",
-			"x = 3/2",
-			"x = -8/5",
-			"x = 4/7",
-			"x = 3",
-			"x = -1/4",
-			"x = 10",
-			"x = 3",
-			"x = -2/11",
-			"x = 6",
-			"x = 1/7"
+			"\\frac{4}{5}",
+			"\\frac{4}{5}",
+			"\\frac{1}{3}",
+			"\\frac{9}{10}",
+			"\\frac{4}{11}",
+			"\\frac{7}{4}",
+			"\\frac{4}{7}",
+			"\\frac{5}{14}",
+			"\\frac{-1}{7}",
+			"\\frac{11}{17}",
+			"\\frac{3}{2}",
+			"\\frac{-8}{5}",
+			"\\frac{4}{7}",
+			"3",
+			"\\frac{-1}{4}",
+			"10",
+			"3",
+			"\\frac{-2}{11}",
+			"6",
+			"\\frac{1}{7}"
 	};
 	
 	
@@ -130,16 +130,16 @@ public class Main {
 	};
 
 	private static final String[] a10 = {
-			"S = \\frac{pQrlK -o}{m}",
-			"S = \\frac{hI+j}{eFk}",
-			"S = \\frac{xYzvB-a}{s}",
-			"S = \\frac{dEfjk-i}{g}",
-			"S = \\frac{oP+t}{uVwq}",
-			"S = aBcgH -dE",
-			"S = \\frac{lMnsT -r}{p}",
-			"S = zXyuV -vW",
-			"S = \\frac{nO+q}{rkLm}",
-			"S = \\frac{gHimN}{j}",
+			" \\frac{pQrlK -o}{m}",
+			" \\frac{hI+j}{eFk}",
+			" \\frac{xYzvB-a}{s}",
+			" \\frac{dEfjk-i}{g}",
+			" \\frac{oP+t}{uVwq}",
+			" aBcgH -dE",
+			" \\frac{lMnsT -r}{p}",
+			" zXyuV -vW",
+			" \\frac{nO+q}{rkLm}",
+			" \\frac{gHimN}{j}",
 			
 	};
 	
@@ -150,7 +150,7 @@ public class Main {
 	    
 
 
-	    for (int nro = 1; nro < 30; nro++){
+	    for (int nro = 4; nro < 54; nro++){
 	    makeProblems(nro);
 		try {
 			var rivit = readFromFile("template.tex");
@@ -464,9 +464,9 @@ public class Main {
                 if (d > 0) sb.append("}{x + " + d + "}");
                 else sb.append("}{x - " + Math.abs(d) + "}");
                 
-                //KORJAA
+                
                 problems[i-1] = sb.toString() ;
-                answers[i-1] = "\\frac{" + num + "}{"+ denom + "}";
+                answers[i-1] = ("\\frac{" + num + "}{"+ denom + "}").replace("*", "");
                 System.out.println();
             }
             
@@ -485,7 +485,7 @@ public class Main {
     		//var split = eq.split("(?<=\\d\\sx)\\s\\s", 2);
     		//problems[i-1] = split[0] + "^2" + split[1] + "= 0";
     		problems[i-1] = eq + "= 0";
-    		answers[i-1] = "x = " +(-1 * a) + "/" + b +" tai x = " + (-1 * c);
+    		answers[i-1] = "\\frac{" +(-1 * a) + "}{" + b +"} \\text{  tai } x = " + (-1 * c);
         	break;
         }
         default:
