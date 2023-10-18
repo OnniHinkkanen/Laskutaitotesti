@@ -286,11 +286,26 @@ public class Main {
 	}
 
 	/**
-	 * Function for generating the rest of the problems.
+	 * Function for generating the rest of the problems and answers. They are stored
+	 * in the corresponding instance variables as a String, in LaTeX syntax.
 	 * 
 	 * Problem 1 
 	 * 
+	 * In this problem the student is given a decimal number which they need to expand into 
+	 * a rational form and then simplify.
 	 * 
+	 * Samples a random integer, divides it by 25 and converts it to a decimal number 
+	 * (between 0.12 and 1.5) for the problem.
+	 * 
+	 * Answer is the simplified form of the rational number.
+	 * 
+	 * 
+	 * Problem 2
+	 * 
+	 * Student needs to convert scientific notation to a decimal number.
+	 * 
+	 * Samples a (truncated) double from the range (1,4) and an integer for the power from the ranges  [-6,-2)
+	 * or [2,6), randomly. Makes sure the last integer of the double is not 0.
 	 * 
 	 * @param i Number of the problem
 	 */
@@ -665,7 +680,7 @@ public class Main {
 	
 	
 	/**
-	 * Samples a random double from the interval (min, max)
+	 * Samples a random double from the interval (min, max) and truncates it after 6 decimal places
 	 * @param min lower bound 
 	 * @param max upper bound
 	 * @return Random real number of type BigDecimal
