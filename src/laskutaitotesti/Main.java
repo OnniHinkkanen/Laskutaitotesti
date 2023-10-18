@@ -197,10 +197,31 @@ public class Main {
 			
 	};
 	
+	private static Process maxima;
+	
 	/**
 	 * @param args does nothing
 	 */
 	public static void main(String[] args) {
+		
+		
+		//Maxima path: C:\devel\maxima-5.41.0\bin\maxima.bat
+		
+        try {
+        	//keeps cmd open
+        	ProcessBuilder builder = new ProcessBuilder(
+	                "cmd.exe", "/k", "maxima");
+        	builder.redirectErrorStream(true);
+			maxima = builder.start();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		var inputStream = maxima.getInputStream();
+		var outputStream = maxima.getOutputStream();
+		
+		//outputStream.write
+		
 		
 		int numberOfTests = 50; 
 		for (int nro = 1; nro < numberOfTests; nro++){
@@ -648,21 +669,21 @@ public class Main {
         try {
    	        ProcessBuilder builder = new ProcessBuilder(
    	                "cmd.exe", "/c", "maxima -q --batch-string=\""+args +"\"");
-   	            builder.redirectErrorStream(true);
-   	            Process p = builder.start();
-   	            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-   	            String line;
-   	            String regex = "(?<=(\\(\\%o\\d\\))).*$";
-   	            
-   	            while (true) {
-   	                line = r.readLine();
-   	                if (line == null) { break; }
-   	                
-                    Matcher matcher = Pattern.compile(regex).matcher(line);
-   	                if (matcher.find()) {ans = line; break;}
-   	                lines.add(line);
-   	                System.out.println(line);
-   	            }
+            builder.redirectErrorStream(true);
+            Process p = builder.start();
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+            String regex = "(?<=(\\(\\%o\\d\\))).*$";
+            
+            while (true) {
+                line = r.readLine();
+                if (line == null) { break; }
+                
+                Matcher matcher = Pattern.compile(regex).matcher(line);
+                if (matcher.find()) {ans = line; break;}
+                lines.add(line);
+                System.out.println(line);
+            }
            } catch (IOException e1) {
                // TODO Auto-generated catch block
                e1.printStackTrace();
@@ -685,13 +706,17 @@ public class Main {
     	//return res[1].trim();
     }
 	
+    private static String callMaximaNew(String args) {
+    	return "";//
+    }
+    
     /**
      * Writes the contents of a list to a file
      * @param rivit List containing the lines of the file
      * @param path path to the file
      * @return true is the write was successful
      */
-	private static boolean writeFile(List<String> rivit, String path) {
+ 	private static boolean writeFile(List<String> rivit, String path) {
 		
 		try (PrintStream fo = new PrintStream(new FileOutputStream(path, true))){
 			for (var rivi : rivit) {
