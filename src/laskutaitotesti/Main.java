@@ -260,7 +260,23 @@ public class Main {
     }
 	
 	/**
-	 * Function for generating problems 6, 8 and 10.
+	 * Function for generating problems 6, 8 and 10. These problems are 
+	 * hand-made and contained in the corresponding instance variables 
+	 * 
+	 * Problem 6
+	 * 
+	 * Expansion of two polynomials
+	 * 
+	 * 
+	 * Problem 8
+	 * 
+	 * Solve a first order equation
+	 * 
+	 * 
+	 * Problem 10
+	 * 
+	 * Solve a variable from an equation with ohly variables.
+	 * 
 	 * @param i Number of the problem
 	 * @param j Number of the test
 	 */
@@ -307,6 +323,48 @@ public class Main {
 	 * Samples a (truncated) double from the range (1,4) and an integer for the power from the ranges  [-6,-2)
 	 * or [2,6), randomly. Makes sure the last integer of the double is not 0.
 	 * 
+	 * Answer is the decimal number after the conversion.
+	 * 
+	 * 
+	 * Problem 3
+	 * 
+	 * Sum of two rational numbers.
+	 * 
+	 * Samples four integers and makes sure they are sensible (i.e. not of the form 2/2 or 2/4, for example, that the
+	 * denominators are not the same integer and that the result is not an integer.)
+	 * 
+	 * Answer is the fraction given by the summation in simplified form.
+	 * 
+	 * 
+	 * Problem 4
+	 * 
+	 * Product of two (non-negative) rational numbers.
+	 * 
+	 * Samples four integers and makes sure the fractions are sensible.
+	 * 
+	 * Answer is the fraction in simplified form.
+	 * 
+	 * 
+	 * 
+	 * Problem 5
+	 * 
+	 * Rules for calculations with exponents
+	 * 
+	 * 
+	 * 
+	 * 
+	 * Problem 7
+	 * 
+	 * Similar to problem 3, but with variables. Calls Maxima to make sure the fractions are sensible.
+	 * 
+	 * 
+	 * Problem 9
+	 * 
+	 * Solve a second order polynomial.
+	 * 
+	 * Samples random integers and creates a second order polynomial, of which one of the roots is rational i.e. not an integer.
+	 * Calls Maxima for the answers.
+	 * 
 	 * @param i Number of the problem
 	 */
     private static void makeProblem(int i) {
@@ -319,14 +377,14 @@ public class Main {
 				
 				double d = a / 25.0;
 				
-				int nom = (int) (d*100);
+				int num = (int) (d*100);
 				int denom = 100;
 				
-				int gcd = gcd(nom, denom);
+				int gcd = gcd(num, denom);
 				
-				nom = nom/gcd; denom = denom/gcd;
+				num = num/gcd; denom = denom/gcd;
 				problems[i-1] = Double.toString(d).replace(".", "{,}");
-				answers[i-1] = "\\frac{"+ nom +"}{"+ denom + "}";
+				answers[i-1] = "\\frac{"+ num +"}{"+ denom + "}";
 				
 			break;}
         case 2:{
@@ -340,14 +398,8 @@ public class Main {
 					len = decim.toString().length() + Math.abs(exp) -2;
 				}
 				problems[i-1] = decim.toString().replace(".", "{,}") + "\\cdot 10^{"+ exp + "}";
-				
-				
-				
 				answers[i-1] = (exp < 0) ?String.format("%."+ len + "f",decim.doubleValue()*Math.pow(10, exp))
 						:String.format("%."+( decim.toString().length() - 2 - Math.abs(exp) )+ "f",decim.doubleValue()*Math.pow(10, exp));
-				
-				//System.out.println(problems[i-1]);
-				//System.out.println(answers[i-1]);
 				
 			break;}
         case 3:{
@@ -373,11 +425,11 @@ public class Main {
 				        : "\\frac{" + a + "}{"+ b +"}" + "-" + "\\frac{" + c + "}{"+ d +"}";
 				
 				
-				int nom = a*d + sgn*c*b;
+				int num = a*d + sgn*c*b;
 				int denom = d*b;
 				
-				int gcd = gcd(denom, nom);
-				answers[i-1] = "\\frac{" + nom/gcd + "}{"+ denom/gcd +"}";
+				int gcd = gcd(denom, num);
+				answers[i-1] = "\\frac{" + num/gcd + "}{"+ denom/gcd +"}";
 				
 			break;}
         case 4:{
@@ -393,15 +445,15 @@ public class Main {
 					c = randInt(2, d);
 				}
 				
-				int nom = a*c;
+				int num = a*c;
 				int denom = b*d;
 				
-				int gcd = gcd(nom, denom);
-				nom = nom/gcd;
+				int gcd = gcd(num, denom);
+				num = num/gcd;
 				denom = denom/gcd;
 				
 				problems[i-1] = "\\frac{"+a+"}{"+b+"}\\cdot\\frac{"+c+"}{"+d+"}";
-				answers[i-1] = "\\frac{"+nom+"}{"+denom+"}";
+				answers[i-1] = "\\frac{"+num+"}{"+denom+"}";
 			
             break;}
         case 5:{
