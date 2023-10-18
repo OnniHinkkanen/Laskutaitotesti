@@ -13,13 +13,46 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.Math;
-
+/**
+ * This program generates a given amount of 'Laskutaitotesti's for the course Calculus 1 at University of Jyväskylä.
+ * Most of the problems are computer-generated, while some remain manual due to the programmer not feeling the time
+ * spent automating these would be better spent elsewhere. The restrictions used in generating the automated problems 
+ * will be made clear later on in the documentation.
+ * 
+ * One needs to have a template.tex -file in the folder from which the program reads the required LaTeX. It is formatted
+ * in such a way that the place where one wants problem 1 is denoted by ;;T1;; and the place for the answer 
+ * is denoted by ;;T1ans;;. The numbering schema location is denoted by ;;tunniste;;. These are hard-coded for reasons
+ * of convenience but can be edited easily in the main function.
+ * 
+ * This program calls on Maxima to perform mathematical calculations. Hence, one needs to have Maxima installed and
+ * the installation path set in the enviromental variable PATH (Maxima installer does not do this automatically for some
+ * reason even though it can be called from the command line.) The decision not to take in the path of Maxima installation 
+ * as an argument was made so as to make the program faster to use as a CLI program.
+ * 
+ * The programmer notes that no JUnit test have been written due to laziness. This breaks proper coding conventions. 
+ * However, in the original specifications, every test is meant to be checked by hand anyway. This means the occasional
+ * imperfections will be caught.
+ * 
+ * @author Onni Hinkkanen
+ * @version 1.0.0
+ * @since 18.10.2023
+ */
 public class Main {
 	
+	//Number of problems in the test.
     private static final int problemAmount = 10;
+    //List of problems for a given test
 	private static String[] problems = new String[10];
+	//List of answers for a given test
 	private static String[] answers = new String[10];
-	
+
+	/*
+	 * Equations for problem 6. The variable one solves for is always x. 
+	 * Size isn't limited to 20 problems i.e. one can have as many as they want if they make sure there
+	 * are as many entries in the next list containing the solutions. One must have that for the problem p6[i]
+	 * the answer is contained in a6[i]. They are looped through normally when generating the tests, 
+	 * so no randomization occurs in the ordering of these.
+	 */
 	private static final String[] p6 = {
 			"2x(4x^2 - x)(1 + 2x)",
 			"-3x(2x^3 + 3x^2)(1 - x)",
@@ -43,7 +76,9 @@ public class Main {
 			"x(7x^2 + x) + (1 + 5x)",
 			"-5x(4x^3 - 3x^2) - (1 - 4x)"
 	};
-	
+	/*
+	 * Answers for problem 6.
+	 */
 	private static final String[] a6 = {
 			"16x^4 +4x^3 -2x^2",
 			"6x^5 + 3x^4 -9x^3",
@@ -68,6 +103,13 @@ public class Main {
 			"-20x^4 +15x^3 +4x -1"
 	};
 
+	/*
+	 * Equations for problem 8. The variable one solves for is always x. 
+	 * Size isn't limited to 20 problems i.e. one can have as many as they want if they make sure there
+	 * are as many entries in the next list containing the solutions. One must have that for the problem p8[i]
+	 * the answer is contained in a8[i]. They are looped through normally when generating the tests, 
+	 * so no randomization occurs in the ordering of these.
+	 */
 	private static final String[] p8 = {
 			"4x - (2x + 2) = 2 - 3x",
 			"2x - (x+3) = 1 - 4x",
@@ -91,6 +133,9 @@ public class Main {
 			"2x + 3(4 + 4x) = 14"
 	};
 	
+	/*
+	 * Solutions for problem 8.
+	 */
 	private static final String[] a8 = {
 			"\\frac{4}{5}",
 			"\\frac{4}{5}",
@@ -114,7 +159,13 @@ public class Main {
 			"\\frac{1}{7}"
 	};
 	
-	
+	/*
+	 * Equations for problem 10. The variable one solves for is always S due to the programmer being lazy. 
+	 * Size isn't limited to 10 problems i.e. one can have as many as they want if they make sure there
+	 * are as many entries in the next list containing the solutions. One must have that for the problem p10[i]
+	 * the answer is contained in a10[i]. They are looped through normally when generating the tests, 
+	 * so no randomization occurs in the ordering of these.
+	 */
 	private static final String[] p10 = {
 			"pQr = \\frac{mS+o}{lK}",
 			"eFg = \\frac{hI+j}{kS}",
@@ -128,18 +179,21 @@ public class Main {
 			"gHi = \\frac{jS+l}{mN}",
 			
 	};
-
+	
+	/*
+	 * Solutions for problem 10.
+	 */
 	private static final String[] a10 = {
 			" \\frac{pQrlK -o}{m}",
-			" \\frac{hI+j}{eFk}",
-			" \\frac{xYzvB-a}{s}",
+			" \\frac{hI+j}{eFkg}",
+			" \\frac{xYzvB-a}{r}",
 			" \\frac{dEfjk-i}{g}",
 			" \\frac{oP+t}{uVwq}",
 			" aBcgH -dE",
 			" \\frac{lMnsT -r}{p}",
 			" zXyuV -vW",
 			" \\frac{nO+q}{rkLm}",
-			" \\frac{gHimN}{j}",
+			" \\frac{gHimN - l}{j}",
 			
 	};
 	
@@ -147,78 +201,50 @@ public class Main {
 	 * @param args does nothing
 	 */
 	public static void main(String[] args) {
-	    
-
-
-	    for (int nro = 4; nro < 54; nro++){
-	    makeProblems(nro);
-		try {
-			var rivit = readFromFile("template.tex");
-			
-			int i = -1;
-			for (var rivi: rivit) {
-				i++;
-				
-				for (int j = 0; j < problemAmount; j++) {
-				    if (problems[j] == null || answers[j] == null) continue;
-				    Matcher matcher1 = Pattern.compile("\\;\\;T" + (j+1) + "\\;\\;").matcher(rivi);
-				    Matcher matcher2 = Pattern.compile("\\;\\;T" + (j+1) + "ans\\;\\;").matcher(rivi);
-				    Matcher matcher3 = Pattern.compile("\\;\\;tunniste\\;\\;").matcher(rivi);
-				    if (matcher1.find()) {
-				        String uusi = rivi.replace(";;T"+(j+1)+ ";;", problems[j]);
-				        rivit.set(i, uusi);
-				    }
-				    if (matcher2.find()) {
-				        String uusi = rivi.replace(";;T"+(j+1)+ "ans;;", answers[j]);
-				        rivit.set(i, uusi);
-				    }	
-				     if (matcher3.find()) {
-				         String uusi = rivi.replace(";;tunniste;;", "L1T" + nro +"G");
-				         rivit.set(i, uusi);
-				     }
-				     
-				}
-			}
-			
-			//File file = new File("testi.tex");
-			//file.delete();
-			
-			writeFile(rivit, "laskutaitotesti1_L1T" + nro + "G.tex");
-			
-			
-			/*
-			// This code example demonstrates how to create a PDF from TeX source file.
-			// Working directory
-			String dataDir = System.getProperty("user.dir");
-
-			// Create typesetting options.
-			TeXOptions options = TeXOptions.consoleAppOptions(TeXConfig.objectLaTeX());
-
-			// Specify a file system working directory for input.
-			options.setInputWorkingDirectory(new InputFileSystemDirectory(dataDir));
-
-			// Specify a file system working directory for output.
-			options.setOutputWorkingDirectory(new OutputFileSystemDirectory(dataDir));
-
-			// Specify memory stream as output terminal.
-			options.setTerminalOut(new OutputMemoryTerminal());
-
-			// Set options for rendering into PDF format.
-			options.setSaveOptions(new PdfSaveOptions());
-
-			// Run typesetting.
-			new TeXJob(dataDir + "laskutaitotesti1_L1T1A.tex", new PdfDevice(), options).run();
-			*/
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
-	}
+		int numberOfTests = 50; 
+		for (int nro = 1; nro < numberOfTests; nro++){
+			
+			//Generate the problems
+			makeProblems(nro);
+			//Write them into a file that corresponds to template.tex
+			try {
+				var rivit = readFromFile("template.tex");
+		
+				int i = -1;
+				for (var rivi: rivit) {
+					i++;
+			
+					for (int j = 0; j < problemAmount; j++) {
+					    if (problems[j] == null || answers[j] == null) continue;
+					    Matcher matcher1 = Pattern.compile("\\;\\;T" + (j+1) + "\\;\\;").matcher(rivi);
+					    Matcher matcher2 = Pattern.compile("\\;\\;T" + (j+1) + "ans\\;\\;").matcher(rivi);
+					    Matcher matcher3 = Pattern.compile("\\;\\;tunniste\\;\\;").matcher(rivi);
+					    if (matcher1.find()) {
+					        String uusi = rivi.replace(";;T"+(j+1)+ ";;", problems[j]);
+					        rivit.set(i, uusi);
+					    }
+					    if (matcher2.find()) {
+					        String uusi = rivi.replace(";;T"+(j+1)+ "ans;;", answers[j]);
+					        rivit.set(i, uusi);
+					    }	
+					     if (matcher3.find()) {
+					         String uusi = rivi.replace(";;tunniste;;", "L1T" + nro +"G");
+						         rivit.set(i, uusi);
+					     }
+					}
+				}
+				writeFile(rivit, "laskutaitotesti1_L1T" + nro + "G.tex");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
-	
+	/**
+	 * Generates the problems for a given test. 
+	 * @param nro Number of the test
+	 */
 	private static void makeProblems(int nro) {
         makeProblem(1);
         makeProblem(2);
@@ -233,6 +259,11 @@ public class Main {
         
     }
 	
+	/**
+	 * Function for generating problems 6, 8 and 10.
+	 * @param i Number of the problem
+	 * @param j Number of the test
+	 */
 	private static void makeProblem(int i, int j) {
 		switch (i) {
     	case 6:{
@@ -254,7 +285,15 @@ public class Main {
 		}
 	}
 
-
+	/**
+	 * Function for generating the rest of the problems.
+	 * 
+	 * Problem 1 
+	 * 
+	 * 
+	 * 
+	 * @param i Number of the problem
+	 */
     private static void makeProblem(int i) {
 		switch (i) {
 			case 1:{
@@ -354,32 +393,32 @@ public class Main {
             int m = randInt(2, 8);
             int n= randInt(2, 3);
             
-            var p1 = new Torni(m,n);
+            var p1 = new PowTow(m,n);
             
             int o= randInt(2, 8);
             
-            var p2 = new Pot(o);
+            var p2 = new Pow(o);
             int p= randInt(2, 8);
             int q= randInt(2, 4);
             
-            var p3 = new PotPot(p,q);
+            var p3 = new PowPow(p,q);
             
             int jarj= randInt(1, 4);
             
             int vast = 0;
             switch(jarj){
             case 1:
-                vast = p1.arvo() + p2.arvo() -p3.arvo();
+                vast = p1.value() + p2.value() -p3.value();
                 problems[i-1] = "\\frac{" +p1.toString() +"\\cdot "+p2.toString()+"}{"+p3.toString()+"}";
                 answers[i-1] = "a^{" + vast +"}";              
                                 break;
             case 2: 
-                vast = p2.arvo() + p3.arvo() -p1.arvo();
+                vast = p2.value() + p3.value() -p1.value();
                 problems[i-1] = "\\frac{"+p2.toString() +" \\cdot "+p3.toString()+"}{"+p1.toString() +"}";
                 answers[i-1] = "a^{" + vast +"}";              
                 break;
             case 3:
-                vast = p3.arvo() + p1.arvo() -p2.arvo();
+                vast = p3.value() + p1.value() -p2.value();
                 problems[i-1] = "\\frac{"+p3.toString()+" \\cdot "+p1.toString() +"}{"+p2.toString()+"}";
                 answers[i-1] = "a^{" + vast +"}";
                 break;
@@ -391,32 +430,32 @@ public class Main {
                 m = randInt(2, 8);
                 n= randInt(2, 3);
                 
-                p1 = new Torni(m,n);
+                p1 = new PowTow(m,n);
                 
                 o= randInt(2, 8);
                 
-                p2 = new Pot(o);
+                p2 = new Pow(o);
                 p= randInt(2, 8);
                 q= randInt(2, 4);
                 
-                p3 = new PotPot(p,q);
+                p3 = new PowPow(p,q);
                 
                 jarj= randInt(1, 4);
                 
                 vast = 0;
                 switch(jarj){
                 case 1:
-                    vast = p1.arvo() + p2.arvo() -p3.arvo();
+                    vast = p1.value() + p2.value() -p3.value();
                     problems[i-1] = "\\frac{" +p1.toString() +"\\cdot "+p2.toString()+"}{"+p3.toString()+"}";
                     answers[i-1] = "a^{" + vast +"}";              
                     break;
                 case 2: 
-                    vast = p2.arvo() + p3.arvo() -p1.arvo();
+                    vast = p2.value() + p3.value() -p1.value();
                     problems[i-1] = "\\frac{"+p2.toString() +" \\cdot "+p3.toString()+"}{"+p1.toString() +"}";
                     answers[i-1] = "a^{" + vast +"}";              
                     break;
                 case 3:
-                    vast = p3.arvo() + p1.arvo() -p2.arvo();
+                    vast = p3.value() + p1.value() -p2.value();
                     problems[i-1] = "\\frac{"+p3.toString()+" \\cdot "+p1.toString() +"}{"+p2.toString()+"}";
                     answers[i-1] = "a^{" + vast +"}";
                     break;
@@ -493,7 +532,13 @@ public class Main {
 			
 	}
 	
-	
+	/**
+	 * Samples a random non-zero integer from the range [i, j).
+	 * @param i lower bound
+	 * @param j upper bound
+	 * @param b this does nothing.
+	 * @return
+	 */
     private static int randInt(int i, int j, boolean b) {
         int rand = 0;
         while (rand == 0) {
@@ -504,16 +549,32 @@ public class Main {
     }
 
 
-    // method to calculate gcd of two numbers
+    /**
+     * Returns the greatest common divisor of two numbers
+     * @param a number one
+     * @param b number two
+     * @return greatest common divisor
+     */
     static int gcd(int a, int b)
     {
         return (a == 0) ?b : gcd(b%a, a);
     }
     
+    /**
+     * Checks if a is a multiple of b
+     * @param a integer
+     * @param b integer
+     * @return true, if a is a multiple of b or b is a multiple of a
+     */
     private static boolean isMultiple(int a, int b) {
         return a%b == 0 || b%a == 0;
     }
 	
+    /**
+     * Calls Maxima with the given input
+     * @param args
+     * @return
+     */
     private static String callMaxima(String args) {
     	String ans = "";   
     	List<String> lines = new ArrayList<String>();
@@ -552,13 +613,20 @@ public class Main {
 			    	     
     	    */
     	   var res = ans.split("\\s", 2);
+    	   //TODO: KORJAA - TÄSSÄ contains(2) aiheuttaa ongelmia, jos kertoimena kaksi
     	   return lines.get(lines.size() -1).contains("2") ? res[1].trim().replaceFirst("x", "x^2") : res[1].trim();
     	//return res[1].trim();
     }
 	
-	private static boolean writeFile(List<String> rivit, String tiednimi) {
+    /**
+     * Writes the contents of a list to a file
+     * @param rivit List containing the lines of the file
+     * @param path path to the file
+     * @return true is the write was successful
+     */
+	private static boolean writeFile(List<String> rivit, String path) {
 		
-		try (PrintStream fo = new PrintStream(new FileOutputStream(tiednimi, true))){
+		try (PrintStream fo = new PrintStream(new FileOutputStream(path, true))){
 			for (var rivi : rivit) {
 				fo.println(rivi);
 			}
@@ -568,29 +636,40 @@ public class Main {
 		return true;	
 	}
 	
+	/**
+	 * Reads a given file and returns a list containing each line of the file.
+	 * @param path path to the file
+	 * @return List of every line in the file
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	private static List<String> readFromFile(String path) throws FileNotFoundException, IOException {
 	
-	private static List<String> readFromFile(String polku) throws Exception {
-	
-		var riviLista = new ArrayList<String>();
+		var lines = new ArrayList<String>();
 		
-        try ( BufferedReader fi = new BufferedReader(new FileReader(polku)) ) {
-           String rivi = fi.readLine();
+        try ( BufferedReader fi = new BufferedReader(new FileReader(path)) ) {
+           String line = fi.readLine();
            
-            while ((rivi = fi.readLine()) != null) {
-            	riviLista.add(rivi);
+            while ((line = fi.readLine()) != null) {
+            	lines.add(line);
             }
             
         } catch (FileNotFoundException e) {
-            throw new Exception("Tiedosto " + polku + " ei aukea");
+            throw new FileNotFoundException("Tiedosto " + path + " ei aukea");
         } catch (IOException e) {
-            throw new Exception("Ongelmia tiedoston kanssa: " +e.getMessage());
+            throw new IOException("Ongelmia tiedoston kanssa: " +e.getMessage());
         }
         
-        return riviLista;
+        return lines;
     }
 	
 	
-	
+	/**
+	 * Samples a random double from the interval (min, max)
+	 * @param min lower bound 
+	 * @param max upper bound
+	 * @return Random real number of type BigDecimal
+	 */
 	private static BigDecimal randDouble(int min, int max) {
 		return truncateDecimal(ThreadLocalRandom.current().nextDouble(min, max), 6);
 	}
@@ -606,6 +685,10 @@ public class Main {
 	    return (int) ((Math.random() * (max - min)) + min);
 	}
 
+	/**
+	 * Returns +1 or -1 randomly
+	 * @return +1 or -1
+	 */
 	private static int randSgn() {
 		int i = randInt(0,2);
 		return (i==1) ? 1 : -1;
@@ -613,6 +696,12 @@ public class Main {
 	}
 	
 	
+	/**
+	 * Truncates a double to given amount of decimals
+	 * @param x double number to be truncated
+	 * @param numberofDecimals number of decimals in the truncation
+	 * @return truncated number of the type BigDecimal
+	 */
 	@SuppressWarnings("deprecation")
 	private static BigDecimal truncateDecimal(double x,int numberofDecimals)
 	{
@@ -622,18 +711,20 @@ public class Main {
 	}
 	
 
-	
-	private static class Torni implements Potenssi{
+	/**
+	 * Class for power tower of two exponents
+	 */
+	private static class PowTow implements Potenssi{
 		private int a;
 		private int b;
 		
-		private Torni(int a, int b) {
+		private PowTow(int a, int b) {
 			this.a = a;
 			this.b = b;
 		}
 		
 		@Override
-        public int arvo() {
+        public int value() {
 			return (int)Math.pow(a, b);
 		}
 		
@@ -643,14 +734,17 @@ public class Main {
 		}
 	}
 	
-	private static class Pot implements Potenssi{
+	/**
+	 * Class for simple power
+	 */
+	private static class Pow implements Potenssi{
 		private int a;
-		private Pot(int a) {
+		private Pow(int a) {
 			this.a = a;
 		}
 		
 		@Override
-        public int arvo() {
+        public int value() {
 			return a;
 		}
 		
@@ -660,16 +754,19 @@ public class Main {
 		}
 	}
 	
-	private static class PotPot implements Potenssi{
+	/**
+	 * Class for power of a power
+	 */
+	private static class PowPow implements Potenssi{
 		private int a;
 		private int b;
-		private PotPot(int a, int b) {
+		private PowPow(int a, int b) {
 			this.a = a;
 			this.b = b;
 		}
 		
 		@Override
-        public int arvo() {
+        public int value() {
 			return a*b;
 		}
 		
@@ -681,8 +778,11 @@ public class Main {
 	
 }
 
+/**
+ * Interface for the classes used in calculating powers in problem 5.
+ */
 interface Potenssi{
-	int arvo();
+	int value();
 	@Override
     String toString();
 	}
