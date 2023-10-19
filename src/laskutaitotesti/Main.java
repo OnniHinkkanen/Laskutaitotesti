@@ -2,9 +2,13 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.Writer;
+import java.io.Reader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -210,7 +214,7 @@ public class Main {
         try {
         	//keeps cmd open
         	ProcessBuilder builder = new ProcessBuilder(
-	                "cmd.exe", "/k", "maxima");
+	                "cmd.exe", "/k", "maxima -q");
         	builder.redirectErrorStream(true);
 			maxima = builder.start();
 		} catch (IOException e) {
@@ -219,8 +223,47 @@ public class Main {
 		}
 		var inputStream = maxima.getInputStream();
 		var outputStream = maxima.getOutputStream();
-		
-		//outputStream.write
+		Writer out = new BufferedWriter(new OutputStreamWriter(outputStream));
+		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+		try {
+			out.write("display2d:false$");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		try {
+			out.write("ratsimp(x*x);");
+			out.flush();
+			for(int i = 0; i < 20; i++) {
+				String ln = in.readLine();
+				System.out.println(ln);
+				if (ln.contains("%o")) break;
+			}
+			out.write("ratsimp(2*x**2 -3*3*x);");
+			out.flush();
+			for(int i = 0; i < 20; i++) {
+				String ln = in.readLine();
+				System.out.println(ln);
+				if (ln.contains("%o")) break;
+			}
+			String line;
+			/*  calling readLine() will
+				cause the reader to wait indefinately for the server to send enough data
+				to fill the buffer before even the first line will be returned, but
+				accessing the input stream directly should fix your problem. 
+			while ((line = in.readLine()) != null) {
+				String xd = in.readLine();
+				System.err.println(xd);		
+				in.ready();
+			}
+			*/
+			
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 		int numberOfTests = 50; 
