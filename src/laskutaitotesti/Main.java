@@ -202,6 +202,8 @@ public class Main {
 	};
 	
 	private static Process maxima;
+	private static BufferedReader in;
+	private static Writer out;
 	
 	/**
 	 * @param args does nothing
@@ -217,49 +219,10 @@ public class Main {
 	                "cmd.exe", "/k", "maxima -q");
         	builder.redirectErrorStream(true);
 			maxima = builder.start();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		var inputStream = maxima.getInputStream();
-		var outputStream = maxima.getOutputStream();
-		Writer out = new BufferedWriter(new OutputStreamWriter(outputStream));
-		BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
-		try {
+			out = new BufferedWriter(new OutputStreamWriter(maxima.getOutputStream()));
+			in = new BufferedReader(new InputStreamReader(maxima.getInputStream()));
 			out.write("display2d:false$");
 			out.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-		try {
-			out.write("ratsimp(x*x);");
-			out.flush();
-			for(int i = 0; i < 20; i++) {
-				String ln = in.readLine();
-				System.out.println(ln);
-				if (ln.contains("%o")) break;
-			}
-			out.write("ratsimp(2*x**2 -3*3*x);");
-			out.flush();
-			for(int i = 0; i < 20; i++) {
-				String ln = in.readLine();
-				System.out.println(ln);
-				if (ln.contains("%o")) break;
-			}
-			String line;
-			/*  calling readLine() will
-				cause the reader to wait indefinately for the server to send enough data
-				to fill the buffer before even the first line will be returned, but
-				accessing the input stream directly should fix your problem. 
-			while ((line = in.readLine()) != null) {
-				String xd = in.readLine();
-				System.err.println(xd);		
-				in.ready();
-			}
-			*/
-			
-
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -706,7 +669,7 @@ public class Main {
      * @param args
      * @return
      */
-    private static String callMaxima(String args) {
+    private static String callMaximaOld(String args) {
     	String ans = "";   
     	List<String> lines = new ArrayList<String>();
         try {
@@ -749,8 +712,25 @@ public class Main {
     	//return res[1].trim();
     }
 	
-    private static String callMaximaNew(String args) {
-    	return "";//
+    private static String callMaxima(String args) {
+    	
+		try {
+			out.write(args);
+			out.flush();
+			for(int i = 0; i < Integer.MAX_VALUE; i++) {
+				String ln = in.readLine();
+				System.out.println(ln);
+				if (ln.contains("%o")) {
+					var res = ln.split("\\s",2);
+					return res[1].trim();
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return "";
     }
     
     /**
