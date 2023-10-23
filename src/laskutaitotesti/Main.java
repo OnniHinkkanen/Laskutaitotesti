@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.math.BigDecimal;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -614,7 +616,7 @@ public class Main {
     			c = randInt(-3, 4);
     		}
     		
-    		String eq = callMaxima("ratsimp("+ b +"*(x +" + a +"/"+b+")*(x+"+c +"));");
+    		String eq = callMaxima("ratsimp("+ b +"*(x +" + a +"/"+b+")*(x+"+c +"));").replace("*", "");
     		//var split = eq.split("(?<=\\d\\sx)\\s\\s", 2);
     		//problems[i-1] = split[0] + "^2" + split[1] + "= 0";
     		problems[i-1] = eq + "= 0";
@@ -741,7 +743,10 @@ public class Main {
      */
  	private static boolean writeFile(List<String> rivit, String path) {
 		
-		try (PrintStream fo = new PrintStream(new FileOutputStream(path, true))){
+		Path currentRelativePath = Paths.get("");
+		String dataDir = currentRelativePath.toAbsolutePath().toString() + "\\testit\\";
+ 		
+		try (PrintStream fo = new PrintStream(new FileOutputStream( dataDir + path, true))){
 			for (var rivi : rivit) {
 				fo.println(rivi);
 			}
