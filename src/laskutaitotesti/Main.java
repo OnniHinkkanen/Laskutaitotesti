@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.Writer;
-import java.io.Reader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.IOException;
@@ -20,6 +19,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.lang.Math;
 /**
+ * This program only works on Windows. Generating the tests requires installation of Maxima
+ * and generating the output PDFs in addition to the .tex files will require installation
+ * of MiKTeX.
+ * 
  * This program generates a given amount of 'Laskutaitotesti's for the course Calculus 1 at University of Jyväskylä.
  * Most of the problems are computer-generated, while some remain manual due to the programmer not feeling the time
  * spent automating these would be better spent elsewhere. The restrictions used in generating the automated problems 
@@ -30,10 +33,10 @@ import java.lang.Math;
  * is denoted by ;;T1ans;;. The numbering schema location is denoted by ;;tunniste;;. These are hard-coded for reasons
  * of convenience but can be edited easily in the main function.
  * 
- * This program calls on Maxima to perform mathematical calculations. Hence, one needs to have Maxima installed and
+ * This program calls on Maxima to perform mathematical calculations. Hence, one needs to either have 
  * the installation path set in the enviromental variable PATH (Maxima installer does not do this automatically for some
- * reason even though it can be called from the command line.) The decision not to take in the path of Maxima installation 
- * as an argument was made so as to make the program faster to use as a CLI program.
+ * reason even though it can be called from the command line.) or provide the path as a parameter with the
+ * -maxima-path argument. 
  * 
  * The programmer notes that no JUnit test have been written due to laziness. This breaks proper coding conventions. 
  * However, in the original specifications, every test is meant to be checked by hand anyway. This means the occasional
@@ -211,7 +214,8 @@ public class Main {
 	 * @param args does nothing
 	 */
 	public static void main(String[] args) {
-		
+		Path currentRelativePath = Paths.get("");
+		String path = currentRelativePath.toAbsolutePath().toString() + "\\testit\\";
 		
 		//Maxima path: C:\devel\maxima-5.41.0\bin\maxima.bat
 		
@@ -231,7 +235,7 @@ public class Main {
 		}
 		
 		
-		int numberOfTests = 50; 
+		int numberOfTests = 50 + 1; 
 		for (int nro = 1; nro < numberOfTests; nro++){
 			
 			//Generate the problems
@@ -263,11 +267,15 @@ public class Main {
 					     }
 					}
 				}
-				writeFile(rivit, "laskutaitotesti1_L1T" + nro + "G.tex");
+				writeFile(rivit, "laskutaitotesti1_L1T" + nro + "G.tex", path);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			System.out.println("Finished generating test " + nro);
 		}
+		LaTeXtoPDFThreading.convertToPdf(path);
+		System.out.println("Exiting.");
+		
 	}
 	
 	/**
@@ -559,7 +567,6 @@ public class Main {
                     break;
             }
             }
-            System.out.println();
 			break;}
         case 7:{
             int a = 0, b=0, c=0, d=0, divis = 1;
@@ -602,7 +609,6 @@ public class Main {
                 
                 problems[i-1] = sb.toString() ;
                 answers[i-1] = ("\\frac{" + num + "}{"+ denom + "}").replace("*", "");
-                System.out.println();
             }
             
             break;
@@ -690,7 +696,7 @@ public class Main {
                 Matcher matcher = Pattern.compile(regex).matcher(line);
                 if (matcher.find()) {ans = line; break;}
                 lines.add(line);
-                System.out.println(line);
+                //System.out.println(line);
             }
            } catch (IOException e1) {
                // TODO Auto-generated catch block
@@ -721,7 +727,7 @@ public class Main {
 			out.flush();
 			for(int i = 0; i < Integer.MAX_VALUE; i++) {
 				String ln = in.readLine();
-				System.out.println(ln);
+				//System.out.println(ln);
 				if (ln.contains("%o")) {
 					var res = ln.split("\\s",2);
 					return res[1].trim();
@@ -738,15 +744,16 @@ public class Main {
     /**
      * Writes the contents of a list to a file
      * @param rivit List containing the lines of the file
-     * @param path path to the file
+     * @param name name of the file
+     * @param path path to the folder
      * @return true is the write was successful
      */
- 	private static boolean writeFile(List<String> rivit, String path) {
+ 	private static boolean writeFile(List<String> rivit, String name, String path) {
 		
-		Path currentRelativePath = Paths.get("");
-		String dataDir = currentRelativePath.toAbsolutePath().toString() + "\\testit\\";
+		//Path currentRelativePath = Paths.get("");
+		String dataDir = path;
  		
-		try (PrintStream fo = new PrintStream(new FileOutputStream( dataDir + path, true))){
+		try (PrintStream fo = new PrintStream(new FileOutputStream( dataDir + name, true))){
 			for (var rivi : rivit) {
 				fo.println(rivi);
 			}

@@ -50,6 +50,49 @@ public class LaTeXtoPDFThreading {
 		
 
 	}
+	
+	
+	public static void convertToPdf(String filePath) {
+		
+		System.out.println("Starting PDF conversion. This might take a while.");
+		System.out.println();
+		String dataFolder = filePath;
+		
+		String texex = "laskutaitotesti.*\\.tex";
+		List<Thread> threads = new ArrayList<Thread>();
+		var start = LocalTime.now();
+		File dir = new File(dataFolder);
+		  File[] directoryListing = dir.listFiles();
+		  if (directoryListing != null) {
+		    for (File child : directoryListing) {
+				Matcher matcher = Pattern.compile(texex).matcher(child.getAbsolutePath());
+				if (matcher.find()) {
+					String command = "powershell.exe -Command \"& {"+ "pdflatex " + matcher.group()
+							+ " --include-directory=" + dataFolder  
+							+ " --output-directory=" + dataFolder + "pdf\\"
+							+ " --aux-directory="+ dataFolder + "auxfiles\\}\"" ;
+					
+					var runnable = new PDFThread(command, matcher.group());
+					Thread thread = new Thread(runnable);
+					threads.add(thread);
+					thread.start();
+				}
+		    }
+		  } else {
+
+		  }
+		
+		for (Thread thread : threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		var end = LocalTime.now();
+		System.out.println();
+		System.out.println("PDF conversion finished!");
+	}
 
 	static class PDFThread implements Runnable {
 		   private Thread t;
@@ -59,11 +102,11 @@ public class LaTeXtoPDFThreading {
 		   PDFThread(String command, String threadName) {
 			  this.command = command;
 		      this.threadName = threadName;
-		      System.out.println("Creating " +  threadName );
+		      //System.out.println("Creating " +  threadName );
 		   }
 		   
 		   public void run() {
-		      System.out.println("Running " +  threadName );
+		      //System.out.println("Running " +  threadName );
 		      ProcessBuilder builder = new ProcessBuilder(
 		                "cmd.exe","/c", command);
 	        	builder.redirectErrorStream(true);
@@ -78,11 +121,11 @@ public class LaTeXtoPDFThreading {
 					e.printStackTrace();
 				}
 	        	
-		      System.out.println("Thread " +  threadName + " exiting.");
+		      System.out.println("Finished converting " +  threadName);
 		   }
 		   
 		   public void start () {
-		      System.out.println("Starting " +  threadName );
+		     // System.out.println("Starting " +  threadName );
 		      if (t == null) {
 		         t = new Thread (this, threadName);
 		         t.start ();
