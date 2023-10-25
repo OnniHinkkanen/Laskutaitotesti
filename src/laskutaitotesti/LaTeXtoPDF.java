@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalTime;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -19,8 +20,9 @@ public class LaTeXtoPDF {
 		
 		String texex = "laskutaitotesti.*\\.tex";
 		//List<Process> procs = new ArrayList<Process>();
-
+		var start = LocalTime.now();
 		try {
+			
 			File dir = new File(dataFolder);
 			  File[] directoryListing = dir.listFiles();
 			  if (directoryListing != null) {
@@ -35,11 +37,13 @@ public class LaTeXtoPDF {
 						ProcessBuilder builder = new ProcessBuilder(
 				                "cmd.exe","/c", command);
 			        	builder.redirectErrorStream(true);
-						Process cmd = builder.start();
+			        	Process cmd = builder.start();
 						//BufferedWriter out = new BufferedWriter(new OutputStreamWriter(cmd.getOutputStream()));
 						//BufferedReader in = new BufferedReader(new InputStreamReader(cmd.getInputStream()));
 						//out.write(command);
 						//out.flush();
+						var fut = cmd.onExit();
+						while(!fut.isDone()) {Thread.sleep(200); System.out.println("kek");}
 						System.out.println(++i);
 					}
 			      // Do something with child
@@ -50,11 +54,13 @@ public class LaTeXtoPDF {
 			    // to avoid race conditions with another process that deletes
 			    // directories.
 			  }
-		} catch (IOException e) {
+		} catch (IOException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		var end = LocalTime.now();
 		
+		System.out.println(start + "|" + end);
 		
 
 	}
