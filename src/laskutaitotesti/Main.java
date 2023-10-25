@@ -238,12 +238,13 @@ public class Main {
 				if (arg.equals("-pdf")) {convert = true; continue;}
 				if (arg.equals("-tests")) {numberOfTests = Integer.parseInt(args[i+1]); continue;}
 				if (arg.equals("-path")) {path = args[i+1]; continue;}
-				if (arg.contains(".maxima-path")) {maximaPath = args[i+1]; continue;}
+				if (arg.contains("-maxima-path")) {maximaPath = args[i+1]; continue;}
 				if (arg.contains("-template-path")) {templatePath = args[i+1]; continue;}
 				
 			}
 		}
-		if (!maximaPath.equals("") && maximaPath.substring(maximaPath.length()-1).equals("\\"))	maximaPath = maximaPath + "\\";
+		if (!maximaPath.equals("") && !maximaPath.substring(maximaPath.length()-1).equals("\\"))	
+			maximaPath = maximaPath + "\\";
 		if (!templatePath.equals("") && templatePath.substring(templatePath.length()-1).equals("\\")) templatePath = templatePath + "\\";
 		if (path.substring(path.length()-1).equals("\\")) path = path + "\\";
 		String testsPath = path + "\\tests\\";
