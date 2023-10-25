@@ -43,17 +43,17 @@ import java.lang.Math;
  * imperfections will be caught.
  * 
  * @author Onni Hinkkanen
- * @version 1.0.0
- * @since 18.10.2023
+ * @version 1.0.1
+ * @since 25.10.2023
  */
 public class Main {
 	
 	//Number of problems in the test.
     private static final int problemAmount = 10;
     //List of problems for a given test
-	private static String[] problems = new String[10];
+	private static String[] problems = new String[problemAmount];
 	//List of answers for a given test
-	private static String[] answers = new String[10];
+	private static String[] answers = new String[problemAmount];
 
 	/*
 	 * Equations for problem 6. The variable one solves for is always x. 
@@ -215,14 +215,34 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		Path currentRelativePath = Paths.get("");
-		String path = currentRelativePath.toAbsolutePath().toString() + "\\testit\\";
+		String path = currentRelativePath.toAbsolutePath().toString();
 		
+		int numberOfTests = 50 + 1;
+		String maximaPath = "";
+		String templatePath = "";
+		boolean convert = false;
+		
+		if (args.length > 0) {
+			for (int i = 0; i < args.length; i++) {
+				String arg = args[i];
+				if (arg.equals("-pdf")) {convert = true; continue;}
+				if (arg.equals("-tests")) {numberOfTests = Integer.parseInt(args[i+1]) + 1; continue;}
+				if (arg.equals("-path")) {path = args[i+1]; continue;}
+				if (arg.contains(".maxima-path")) {maximaPath = args[i+1]; continue;}
+				if (arg.contains("-template-path")) {templatePath = args[i+1]; continue;}
+				
+			}
+		}
+		if (!maximaPath.equals("") && maximaPath.substring(maximaPath.length()-1).equals("\\"))	maximaPath = maximaPath + "\\";
+		if (!templatePath.equals("") && templatePath.substring(templatePath.length()-1).equals("\\")) templatePath = templatePath + "\\";
+		if (path.substring(path.length()-1).equals("\\")) path = path + "\\";
+		String testsPath = path + "\\testit\\";
 		//Maxima path: C:\devel\maxima-5.41.0\bin\maxima.bat
 		
         try {
         	//keeps cmd open
         	ProcessBuilder builder = new ProcessBuilder(
-	                "cmd.exe", "/k", "maxima -q");
+	                "cmd.exe", "/k", maximaPath + "maxima -q");
         	builder.redirectErrorStream(true);
 			maxima = builder.start();
 			out = new BufferedWriter(new OutputStreamWriter(maxima.getOutputStream()));
@@ -235,7 +255,7 @@ public class Main {
 		}
 		
 		
-		int numberOfTests = 50 + 1; 
+
 		for (int nro = 1; nro < numberOfTests; nro++){
 			
 			//Generate the problems
@@ -267,13 +287,13 @@ public class Main {
 					     }
 					}
 				}
-				writeFile(rivit, "laskutaitotesti1_L1T" + nro + "G.tex", path);
+				writeFile(rivit, "laskutaitotesti1_L1T" + nro + "G.tex", testsPath);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			System.out.println("Finished generating test " + nro);
 		}
-		LaTeXtoPDFThreading.convertToPdf(path);
+		if (convert) LaTeXtoPDFThreading.convertToPdf(testsPath);
 		System.out.println("Exiting.");
 		
 	}
