@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import me.tongfei.progressbar.ProgressBar;
+
 import java.lang.Math;
 /**
  * This program only works on Windows. Generating the tests requires installation of Maxima
@@ -33,14 +36,18 @@ import java.lang.Math;
  * is denoted by ;;T1ans;;. The numbering schema location is denoted by ;;tunniste;;. These are hard-coded for reasons
  * of convenience but can be edited easily in the main function.
  * 
- * This program calls on Maxima to perform mathematical calculations. Hence, one needs to either have 
+ * This program relies on Maxima to perform mathematical calculations. Hence, one needs to either have 
  * the installation path set in the enviromental variable PATH (Maxima installer does not do this automatically for some
  * reason even though it can be called from the command line.) or provide the path as a parameter with the
- * -maxima-path argument. 
+ * -maxima-path argument. In addition, the conversion to PDF is performed with pdftolatex in PowerShell, which
+ * should not require additional actions.
  * 
  * The programmer notes that no JUnit test have been written due to laziness. This breaks proper coding conventions. 
  * However, in the original specifications, every test is meant to be checked by hand anyway. This means the occasional
  * imperfections will be caught.
+ * 
+ * Known limitations:
+ * -If the folder \testit\ in the path has other .tex files, the program will convert them all to PDF if the PDF option is set.
  * 
  * @author Onni Hinkkanen
  * @version 1.0.1
@@ -217,16 +224,18 @@ public class Main {
 		Path currentRelativePath = Paths.get("");
 		String path = currentRelativePath.toAbsolutePath().toString();
 		
-		int numberOfTests = 50 + 1;
+		int numberOfTests = 20;
 		String maximaPath = "";
 		String templatePath = "";
 		boolean convert = false;
 		
+		
 		if (args.length > 0) {
+			if (args[0].contains("?")) {System.out.println("Help"); System.exit(0);}
 			for (int i = 0; i < args.length; i++) {
 				String arg = args[i];
 				if (arg.equals("-pdf")) {convert = true; continue;}
-				if (arg.equals("-tests")) {numberOfTests = Integer.parseInt(args[i+1]) + 1; continue;}
+				if (arg.equals("-tests")) {numberOfTests = Integer.parseInt(args[i+1]); continue;}
 				if (arg.equals("-path")) {path = args[i+1]; continue;}
 				if (arg.contains(".maxima-path")) {maximaPath = args[i+1]; continue;}
 				if (arg.contains("-template-path")) {templatePath = args[i+1]; continue;}
@@ -238,7 +247,8 @@ public class Main {
 		if (path.substring(path.length()-1).equals("\\")) path = path + "\\";
 		String testsPath = path + "\\testit\\";
 		//Maxima path: C:\devel\maxima-5.41.0\bin\maxima.bat
-		
+		System.out.println("Started generating "+ numberOfTests + " tests");
+		ProgressBar pb = new ProgressBar("Progress", numberOfTests);
         try {
         	//keeps cmd open
         	ProcessBuilder builder = new ProcessBuilder(
@@ -256,7 +266,7 @@ public class Main {
 		
 		
 
-		for (int nro = 1; nro < numberOfTests; nro++){
+		for (int nro = 1; nro < numberOfTests + 1; nro++){
 			
 			//Generate the problems
 			makeProblems(nro);
@@ -291,8 +301,10 @@ public class Main {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			System.out.println("Finished generating test " + nro);
+			//System.out.println("Finished generating test " + nro);
+			pb.step();
 		}
+		pb.close();
 		if (convert) LaTeXtoPDFThreading.convertToPdf(testsPath);
 		System.out.println("Exiting.");
 		
