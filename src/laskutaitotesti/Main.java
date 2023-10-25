@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -245,7 +246,14 @@ public class Main {
 		if (!maximaPath.equals("") && maximaPath.substring(maximaPath.length()-1).equals("\\"))	maximaPath = maximaPath + "\\";
 		if (!templatePath.equals("") && templatePath.substring(templatePath.length()-1).equals("\\")) templatePath = templatePath + "\\";
 		if (path.substring(path.length()-1).equals("\\")) path = path + "\\";
-		String testsPath = path + "\\testit\\";
+		String testsPath = path + "\\tests\\";
+		try {
+			Files.createDirectories(Paths.get(testsPath));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		//Maxima path: C:\devel\maxima-5.41.0\bin\maxima.bat
 		System.out.println("Started generating "+ numberOfTests + " tests");
 		ProgressBar pb = new ProgressBar("Progress", numberOfTests);

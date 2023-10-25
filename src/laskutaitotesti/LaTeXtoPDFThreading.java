@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalTime;
@@ -56,6 +57,12 @@ public class LaTeXtoPDFThreading {
 		
 		String texex = "laskutaitotesti.*\\.tex";
 		List<Thread> threads = new ArrayList<Thread>();
+		try {
+			Files.createDirectories(Paths.get(dataFolder));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		File dir = new File(dataFolder);
 		File[] directoryListing = dir.listFiles();
