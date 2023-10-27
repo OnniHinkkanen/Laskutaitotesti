@@ -16,7 +16,7 @@ import java.util.ArrayList;
  
 /**
  * A class for converting the LaTeX files to PDF. The progress bar is implemented with an external Java class
- * ctongfei.progressbar, which is published uncer the MIT license stated below.
+ * ctongfei.progressbar, which is published under the MIT license stated below.
  * 
  *   The MIT License (MIT)
  *Copyright (c) 2015--2020 Tongfei Chen and contributors
@@ -41,26 +41,22 @@ import java.util.ArrayList;
  */
 public class LaTeXtoPDFThreading {
 
-	public static void main(String[] args) {
-		Path currentRelativePath = Paths.get("");
-		String dataFolder = currentRelativePath.toAbsolutePath().toString() + "\\testit\\";
-		
-		convertToPdf(dataFolder);	
-
-	}
 	private static ProgressBar pb;
 	
-	public static void convertToPdf(String filePath) {
+	/**
+	 * Converts every laskutaitotesti.*\.tex file to PDF
+	 * @param path Path to the folder containing the tex files
+	 */
+	public static void convertToPdf(String path) {
 		
 		System.out.println("Starting PDF conversion. This might take a while.");		
-		String dataFolder = filePath;
+		String dataFolder = path;
 		
 		String texex = "laskutaitotesti.*\\.tex";
 		List<Thread> threads = new ArrayList<Thread>();
 		try {
 			Files.createDirectories(Paths.get(dataFolder));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -96,12 +92,14 @@ public class LaTeXtoPDFThreading {
 				e.printStackTrace();
 			}
 		}
-		var end = LocalTime.now();
 		pb.close();
 		System.out.println("PDF conversion finished!");
 		
 	}
 
+	/**
+	 * A Runnable class for threading
+	 */
 	static class PDFThread implements Runnable {
 		   private Thread t;
 		   private String threadName;
@@ -110,11 +108,9 @@ public class LaTeXtoPDFThreading {
 		   PDFThread(String command, String threadName) {
 			  this.command = command;
 		      this.threadName = threadName;
-		      //System.out.println("Creating " +  threadName );
 		   }
 		   
 		   public void run() {
-		      //System.out.println("Running " +  threadName );
 		      ProcessBuilder builder = new ProcessBuilder(
 		                "cmd.exe","/c", command);
 	        	builder.redirectErrorStream(true);
@@ -128,12 +124,9 @@ public class LaTeXtoPDFThreading {
 				} catch (IOException | InterruptedException e) {
 					e.printStackTrace();
 				}
-	        	
-		      //System.out.println("Finished converting " +  threadName);
 		   }
 		   
 		   public void start () {
-		     // System.out.println("Starting " +  threadName );
 		      if (t == null) {
 		         t = new Thread (this, threadName);
 		         t.start ();

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.Writer;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -48,7 +49,7 @@ import java.lang.Math;
  * imperfections will be caught.
  * 
  * Known limitations:
- * -If the folder \testit\ in the path has other .tex files, the program will convert them all to PDF if the PDF option is set.
+ * -If the folder \tests\ in the path has other .tex files, the program will convert them all to PDF if the PDF option is set.
  * 
  * @author Onni Hinkkanen
  * @version 1.0.1
@@ -219,9 +220,10 @@ public class Main {
 	private static Writer out;
 	
 	/**
-	 * @param args does nothing
+	 * @param args arguments for the program
 	 */
 	public static void main(String[] args) {
+		//Initialization
 		Path currentRelativePath = Paths.get("");
 		String path = currentRelativePath.toAbsolutePath().toString();
 		
@@ -230,7 +232,7 @@ public class Main {
 		String templatePath = "";
 		boolean convert = false;
 		
-		
+		//Check the arguments
 		if (args.length > 0) {
 			if (args[0].contains("?")) {System.out.println("Help"); System.exit(0);}
 			for (int i = 0; i < args.length; i++) {
@@ -240,26 +242,23 @@ public class Main {
 				if (arg.equals("-path")) {path = args[i+1]; continue;}
 				if (arg.contains("-maxima-path")) {maximaPath = args[i+1]; continue;}
 				if (arg.contains("-template-path")) {templatePath = args[i+1]; continue;}
-				
 			}
 		}
+		
+		//More initialization
 		if (!maximaPath.equals("") && !maximaPath.substring(maximaPath.length()-1).equals("\\"))	
 			maximaPath = maximaPath + "\\";
 		if (!templatePath.equals("") && templatePath.substring(templatePath.length()-1).equals("\\")) templatePath = templatePath + "\\";
 		if (path.substring(path.length()-1).equals("\\")) path = path + "\\";
 		String testsPath = path + "\\tests\\";
-		try {
-			Files.createDirectories(Paths.get(testsPath));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	
+		if (!new File(maximaPath + "\\maxima.bat").exists()) {
+			System.err.println("The path specified for Maxima does not contain Maxima installation. Exiting.");
+			System.exit(1);
 		}
 		
-		//Maxima path: C:\devel\maxima-5.41.0\bin\maxima.bat
-		System.out.println("Started generating "+ numberOfTests + " tests");
-		ProgressBar pb = new ProgressBar("Progress", numberOfTests);
-        try {
-        	//keeps cmd open
+        //Open the Maxima instance
+		try {
         	ProcessBuilder builder = new ProcessBuilder(
 	                "cmd.exe", "/k", maximaPath + "maxima -q");
         	builder.redirectErrorStream(true);
@@ -268,13 +267,14 @@ public class Main {
 			in = new BufferedReader(new InputStreamReader(maxima.getInputStream()));
 			out.write("display2d:false$");
 			out.flush();
+			Files.createDirectories(Paths.get(testsPath));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		System.out.println("Started generating "+ numberOfTests + " tests");
+		ProgressBar pb = new ProgressBar("Progress", numberOfTests);
 		
-
 		for (int nro = 1; nro < numberOfTests + 1; nro++){
 			
 			//Generate the problems
@@ -313,6 +313,7 @@ public class Main {
 			//System.out.println("Finished generating test " + nro);
 			pb.step();
 		}
+		//Close the progress bar and convert the files if option is set
 		pb.close();
 		if (convert) LaTeXtoPDFThreading.convertToPdf(testsPath);
 		System.out.println("Exiting.");
@@ -353,7 +354,7 @@ public class Main {
 	 * 
 	 * Problem 10
 	 * 
-	 * Solve a variable from an equation with ohly variables.
+	 * Solve a variable from an equation with only variables.
 	 * 
 	 * @param i Number of the problem
 	 * @param j Number of the test
@@ -481,32 +482,36 @@ public class Main {
 				
 			break;}
         case 3:{
-				int b = randInt(3, 10);
-				int d = randInt(3,10);
+        		int a = 0,b=0,c=0,d = 0, sgn=1, num=-1, denom=-1, gcd=0;
 				
-				while (d == b || isMultiple(d,b)) {
-					d = randInt(3,10);
-				}
+
+        		while (num < 0 || denom < 0) {
+        			b = randInt(3, 10);
+    				d = randInt(3,10);
+    				
+    				while (d == b || isMultiple(d,b)) {
+    					d = randInt(3,10);
+    				}
+    				
+    				a = randInt(2,b);
+    				while (gcd(a,b) > 1) {
+    					a = randInt(2,b);
+    				}
+    				
+    				c = randInt(2,d);
+    				while (gcd(c,d) > 1) {
+    					c = randInt(2,d);
+    				}
+    				sgn = randSgn();
+    				
+    				num = a*d + sgn*c*b;
+    				denom = d*b;
+    				gcd = gcd(denom, num);
+        		}
 				
-				int a = randInt(2,b);
-				while (gcd(a,b) > 1) {
-					a = randInt(2,b);
-				}
-				
-				int c = randInt(2,d);
-				while (gcd(c,d) > 1) {
-					c = randInt(2,d);
-				}
-				int sgn = randSgn();
 				
 				problems[i-1] = (sgn > 0) ? "\\frac{" + a + "}{"+ b +"}" + "+" + "\\frac{" + c + "}{"+ d +"}"
 				        : "\\frac{" + a + "}{"+ b +"}" + "-" + "\\frac{" + c + "}{"+ d +"}";
-				
-				
-				int num = a*d + sgn*c*b;
-				int denom = d*b;
-				
-				int gcd = gcd(denom, num);
 				answers[i-1] = "\\frac{" + num/gcd + "}{"+ denom/gcd +"}";
 				
 			break;}
@@ -622,13 +627,13 @@ public class Main {
                 String num =callMaxima("num(ratsimp("+poly+"));");
                 String denom = callMaxima("denom(ratsimp("+poly+"));");   
                 
-                //Tässä numeron ja x:n väliin kertomerkki regexillä
+                
                 String multRegex = "(?<=\\d)\\s(?=x)";
                 num = num.replaceAll(multRegex, "*");
                 denom = denom.replaceAll(multRegex, "*");
                 
                 
-                //Tämä pitää miettiä uudestaan, ehkä
+                
                 String div = callMaxima("second(divide("+num+","+denom+"));").replace(" ", "");
                 try {
                 divis = Integer.parseInt(div);
@@ -664,8 +669,6 @@ public class Main {
     		}
     		
     		String eq = callMaxima("ratsimp("+ b +"*(x +" + a +"/"+b+")*(x+"+c +"));").replace("*", "");
-    		//var split = eq.split("(?<=\\d\\sx)\\s\\s", 2);
-    		//problems[i-1] = split[0] + "^2" + split[1] + "= 0";
     		problems[i-1] = eq + "= 0";
     		answers[i-1] = "\\frac{" +(-1 * a) + "}{" + b +"} \\text{  tai } x = " + (-1 * c);
         	break;
@@ -713,53 +716,6 @@ public class Main {
         return a%b == 0 || b%a == 0;
     }
 	
-    /**
-     * Calls Maxima with the given input
-     * @param args
-     * @return
-     */
-    private static String callMaximaOld(String args) {
-    	String ans = "";   
-    	List<String> lines = new ArrayList<String>();
-        try {
-   	        ProcessBuilder builder = new ProcessBuilder(
-   	                "cmd.exe", "/c", "maxima -q --batch-string=\""+args +"\"");
-            builder.redirectErrorStream(true);
-            Process p = builder.start();
-            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-            String regex = "(?<=(\\(\\%o\\d\\))).*$";
-            
-            while (true) {
-                line = r.readLine();
-                if (line == null) { break; }
-                
-                Matcher matcher = Pattern.compile(regex).matcher(line);
-                if (matcher.find()) {ans = line; break;}
-                lines.add(line);
-                //System.out.println(line);
-            }
-           } catch (IOException e1) {
-               // TODO Auto-generated catch block
-               e1.printStackTrace();
-           }
-    	   /*
-    	    Picked up _JAVA_OPTIONS: -Djava.vendor="Sun Microsystems Inc."
-
-			'\\FILESERVICES.AD.JYU.FI\homes\onukilla\Desktop\Laskutaitotesti'
-			CMD.EXE was started with the above path as the current directory.
-			UNC paths are not supported.  Defaulting to Windows directory.
-			(%i1) ratsimp(5*(x+(-6)/5)*(x+2))
-			                                   2
-			(%o1)                           5 x  + 4 x - 12
-			    	     
-			    	     
-    	    */
-    	   var res = ans.split("\\s", 2);
-    	   //TODO: KORJAA - TÄSSÄ contains(2) aiheuttaa ongelmia, jos kertoimena kaksi
-    	   return lines.get(lines.size() -1).contains("2") ? res[1].trim().replaceFirst("x", "x^2") : res[1].trim();
-    	//return res[1].trim();
-    }
 	
     private static String callMaxima(String args) {
     	
@@ -823,9 +779,9 @@ public class Main {
             }
             
         } catch (FileNotFoundException e) {
-            throw new FileNotFoundException("Tiedosto " + path + " ei aukea");
+            throw new FileNotFoundException("The file " + path + " doesn't exist");
         } catch (IOException e) {
-            throw new IOException("Ongelmia tiedoston kanssa: " +e.getMessage());
+            throw new IOException("Problems with the file: " +e.getMessage());
         }
         
         return lines;
@@ -879,6 +835,10 @@ public class Main {
 	}
 	
 
+	
+	//======================================================================
+	// These classes are 'stupid' in the sense that they are designed only for exponential algebra
+	// for the same base number
 	/**
 	 * Class for power tower of two exponents
 	 */
