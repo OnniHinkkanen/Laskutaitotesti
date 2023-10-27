@@ -1,5 +1,3 @@
-REM java -jar %0\laskutaitotesti.jar
-
 cls
 @pushd %~dp0
 :::::::::::::::::::
