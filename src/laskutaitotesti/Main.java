@@ -252,7 +252,7 @@ public class Main {
 		if (path.substring(path.length()-1).equals("\\")) path = path + "\\";
 		String testsPath = path + "\\tests\\";
 	
-		if (!new File(maximaPath + "\\maxima.bat").exists()) {
+		if (!maximaPath.equals("") && !new File(maximaPath + "\\maxima.bat").exists()) {
 			System.err.println("The path specified for Maxima does not contain Maxima installation. Exiting.");
 			System.exit(1);
 		}
