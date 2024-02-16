@@ -9,6 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.InputStream;
+import java.util.function.Consumer;
 import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -57,12 +59,7 @@ import java.lang.Math;
  */
 public class Main {
 	
-	//Number of problems in the test.
-    private static final int problemAmount = 10;
-    //List of problems for a given test
-	private static String[] problems = new String[problemAmount];
-	//List of answers for a given test
-	private static String[] answers = new String[problemAmount];
+
 
 	/*
 	 * Equations for problem 6. The variable one solves for is always x. 
@@ -215,6 +212,15 @@ public class Main {
 			
 	};
 	
+	//Number of problems in the test.
+	private static final int problemAmount = 10;
+	//List of problems for a given test
+	private static String[] problems = new String[problemAmount];
+	//List of answers for a given test
+	private static String[] answers = new String[problemAmount];
+
+	private static boolean isWindows;
+	
 	private static Process maxima;
 	private static BufferedReader in;
 	private static Writer out;
@@ -225,7 +231,10 @@ public class Main {
 	public static void main(String[] args) {
 		//Initialization
 		Path currentRelativePath = Paths.get("");
+		
+		//TODO: Fix for Linux
 		String path = currentRelativePath.toAbsolutePath().toString();
+		isWindows = System.getProperty("os.name").toLowerCase().startsWith("windows");
 		
 		int numberOfTests = 20;
 		String maximaPath = "";
@@ -250,7 +259,7 @@ public class Main {
 			maximaPath = maximaPath + "\\";
 		if (!templatePath.equals("") && templatePath.substring(templatePath.length()-1).equals("\\")) templatePath = templatePath + "\\";
 		if (path.substring(path.length()-1).equals("\\")) path = path + "\\";
-		String testsPath = path + "\\tests\\";
+		String testsPath = (isWindows) ? path + "\\tests\\" : path + "/tests/";
 	
 		if (!maximaPath.equals("") && !new File(maximaPath + "\\maxima.bat").exists()) {
 			System.err.println("The path specified for Maxima does not contain Maxima installation. Exiting.");
@@ -258,19 +267,26 @@ public class Main {
 		}
 		
         //Open the Maxima instance
-		try {
-        	ProcessBuilder builder = new ProcessBuilder(
-	                "cmd.exe", "/k", maximaPath + "maxima -q");
-        	builder.redirectErrorStream(true);
-			maxima = builder.start();
-			out = new BufferedWriter(new OutputStreamWriter(maxima.getOutputStream()));
-			in = new BufferedReader(new InputStreamReader(maxima.getInputStream()));
-			out.write("display2d:false$");
-			out.flush();
-			Files.createDirectories(Paths.get(testsPath));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		
+			try {
+				ProcessBuilder builder = new ProcessBuilder();
+				if (isWindows){
+					builder.command("cmd.exe", "/k", maximaPath + "maxima -q");
+				} else {
+					builder.command("sh", "-c", maximaPath + "maxima -q");
+				}
+				builder.redirectErrorStream(true);
+				maxima = builder.start();
+				out = new BufferedWriter(new OutputStreamWriter(maxima.getOutputStream()));
+				in = new BufferedReader(new InputStreamReader(maxima.getInputStream()));
+				out.write("display2d:false$");
+				out.flush();
+				Files.createDirectories(Paths.get(testsPath));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+
 		
 		System.out.println("Started generating "+ numberOfTests + " tests");
 		ProgressBar pb = new ProgressBar("Progress", numberOfTests);
@@ -842,7 +858,7 @@ public class Main {
 	/**
 	 * Class for power tower of two exponents
 	 */
-	private static class PowTow implements Potenssi{
+	private static class PowTow implements Power{
 		private int a;
 		private int b;
 		
@@ -865,7 +881,7 @@ public class Main {
 	/**
 	 * Class for simple power
 	 */
-	private static class Pow implements Potenssi{
+	private static class Pow implements Power{
 		private int a;
 		private Pow(int a) {
 			this.a = a;
@@ -885,7 +901,7 @@ public class Main {
 	/**
 	 * Class for power of a power
 	 */
-	private static class PowPow implements Potenssi{
+	private static class PowPow implements Power{
 		private int a;
 		private int b;
 		private PowPow(int a, int b) {
@@ -909,7 +925,7 @@ public class Main {
 /**
  * Interface for the classes used in calculating powers in problem 5.
  */
-interface Potenssi{
+interface Power{
 	int value();
 	@Override
     String toString();
