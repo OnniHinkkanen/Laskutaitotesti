@@ -6,17 +6,11 @@
     "configurations": [
         {
             "type": "java",
-            "name": "LaTeXtoPDF",
+            "name": "Laskutaitotesti",
             "request": "launch",
-            "mainClass": "LaTeXtoPDF",
-            "projectName": "LaTeXtoPDF"
-        },
-        {
-            "type": "java",
-            "name": "Main",
-            "request": "launch",
-            "mainClass": "Main",
-            "projectName": "Laskutaitotesti"
+            "mainClass": "${file}",
+            "projectName": "Laskutaitotesti",
+            "console": "integratedTerminal"
         }
     ]
 }
