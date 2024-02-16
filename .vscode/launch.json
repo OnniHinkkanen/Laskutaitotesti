@@ -6,16 +6,10 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Current File",
-            "request": "launch",
-            "mainClass": "${file}"
-        },
-        {
-            "type": "java",
             "name": "LaTeXtoPDF",
             "request": "launch",
             "mainClass": "LaTeXtoPDF",
-            "projectName": "Laskutaitotesti"
+            "projectName": "LaTeXtoPDF"
         },
         {
             "type": "java",
