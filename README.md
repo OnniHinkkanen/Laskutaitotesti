@@ -1,7 +1,7 @@
 # Laskutaitotesti
 
 Tämä ohjelma luo halutun määrän laskutaitotestejä kurssille Calculus 1. Ohjelman ajaminen onnistuu joko komentoriviltä tai 
-tuplaklikkaamalla run.bat -tiedostoa. Ajon konfiguraatiota voi muokata muokkaamalla run.bat -tiedostoa.
+tuplaklikkaamalla run.bat -tiedostoa. Ajon konfiguraatiota voi muokata muokkaamalla run.bat -tiedostoa. Nämä ohjeet koskevat Windows-tietokonetta - koodi toimii myös Linuxin komentoriviltä.
 
 ## Vaatimukset
 Tämä ohjelma vaatii Maximan asennusta koneelle. Lisäksi, jos halutaan kääntää luodut .tex-tiedostot PDFiksi, tulee olla
